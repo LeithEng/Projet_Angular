@@ -1,0 +1,205 @@
+<div class="movie-detail-container" *ngIf="!loading() && movieDetails()">
+  <!-- Backdrop Header -->
+  <div
+    class="backdrop-header"
+    [style.background-image]="'url(' + getBackdropUrl(movieDetails()?.backdrop_path ?? null) + ')'"
+  >
+    <div class="backdrop-overlay">
+      <div class="header-content">
+        <button class="back-button" (click)="goBack()">
+          <span>←</span> Back
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <div class="main-info">
+      <!-- Poster -->
+      <div class="poster-section">
+        <img
+          [src]="getPosterUrl(movieDetails()?.poster_path ?? null)"
+          [alt]="movieDetails()?.title"
+          class="poster"
+        />
+      </div>
+
+      <!-- Details -->
+      <div class="details-section">
+        <h1 class="title">{{ movieDetails()?.title }}</h1>
+        <p class="tagline" *ngIf="movieDetails()?.tagline">{{ movieDetails()?.tagline }}</p>
+
+        <div class="metadata">
+          <span class="rating" [ngClass]="getRatingClass(movieDetails()?.vote_average || 0)">
+            ★ {{ getRatingPercentage(movieDetails()?.vote_average || 0) }}%
+          </span>
+          <span class="release-date">{{ formatDate(movieDetails()?.release_date || '') }}</span>
+          <span class="runtime" *ngIf="movieDetails()?.runtime">
+            {{ formatRuntime(movieDetails()?.runtime || 0) }}
+          </span>
+        </div>
+
+        <div class="genres">
+          <span class="genre-tag" *ngFor="let genre of movieDetails()?.genres">
+            {{ genre.name }}
+          </span>
+        </div>
+
+        <div class="overview-section">
+          <h2>Overview</h2>
+          <p class="overview">{{ movieDetails()?.overview }}</p>
+        </div>
+
+        <!-- Key Crew -->
+        <div class="key-crew" *ngIf="director() || writers().length > 0">
+          <div class="crew-item" *ngIf="director()">
+            <span class="crew-role">Director</span>
+            <span class="crew-name">{{ director()?.name }}</span>
+          </div>
+          <div class="crew-item" *ngIf="writers().length > 0">
+            <span class="crew-role">Writers</span>
+            <span class="crew-name">{{ getWritersNames() }}</span>
+          </div>
+          <div class="crew-item" *ngIf="producers().length > 0">
+            <span class="crew-role">Producers</span>
+            <span class="crew-name">{{ getProducersNames() }}</span>
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="additional-info">
+          <div class="info-item" *ngIf="movieDetails()?.budget">
+            <span class="info-label">Budget:</span>
+            <span class="info-value">{{ formatCurrency(movieDetails()?.budget || 0) }}</span>
+          </div>
+          <div class="info-item" *ngIf="movieDetails()?.revenue">
+            <span class="info-label">Revenue:</span>
+            <span class="info-value">{{ formatCurrency(movieDetails()?.revenue || 0) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value">{{ movieDetails()?.status }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Original Language:</span>
+            <span class="info-value">{{ movieDetails()?.original_language?.toUpperCase() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trailers & Videos Section -->
+    <section class="trailers-section" *ngIf="videos().length > 0">
+      <h2 class="section-title">Trailers & Videos</h2>
+      <div class="trailers-grid">
+        <div class="trailer-card" *ngFor="let video of videos()" (click)="playTrailer(video)">
+          <div class="trailer-thumbnail">
+            <img
+              [src]="'https://img.youtube.com/vi/' + video.key + '/hqdefault.jpg'"
+              [alt]="video.name"
+              class="thumbnail-image"
+            />
+            <div class="play-overlay">
+              <div class="play-button">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="trailer-info">
+            <p class="trailer-name">{{ video.name }}</p>
+            <p class="trailer-type">{{ video.type }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cast Section -->
+    <section class="cast-section" *ngIf="cast().length > 0">
+      <h2 class="section-title">Top Cast</h2>
+      <div class="cast-grid">
+        <div class="cast-card" *ngFor="let member of cast()">
+          <img
+            [src]="getProfileUrl(member.profile_path)"
+            [alt]="member.name"
+            class="cast-image"
+          />
+          <div class="cast-info">
+            <p class="cast-name">{{ member.name }}</p>
+            <p class="cast-character">{{ member.character }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section" *ngIf="reviews().length > 0">
+      <h2 class="section-title">Reviews</h2>
+      <div class="reviews-list">
+        <div class="review-card" *ngFor="let review of reviews()">
+          <div class="review-header">
+            <div class="review-author">
+              <img
+                *ngIf="review.author_details.avatar_path"
+                [src]="getProfileUrl(review.author_details.avatar_path)"
+                [alt]="review.author"
+                class="author-avatar"
+              />
+              <div class="author-avatar-placeholder" *ngIf="!review.author_details.avatar_path">
+                {{ review.author.charAt(0).toUpperCase() }}
+              </div>
+              <div class="author-info">
+                <p class="author-name">{{ review.author }}</p>
+                <p class="review-date">{{ formatDate(review.created_at) }}</p>
+              </div>
+            </div>
+            <div class="review-rating" *ngIf="review.author_details.rating">
+              ★ {{ review.author_details.rating }}/10
+            </div>
+          </div>
+          <p class="review-content">{{ truncateText(review.content, 300) }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Similar Movies Section -->
+    <section class="similar-section" *ngIf="similarMovies().length > 0">
+      <h2 class="section-title">Similar Movies</h2>
+      <div class="similar-grid">
+        <div
+          class="similar-card"
+          *ngFor="let movie of similarMovies()"
+          (click)="navigateToMovie(movie.id)"
+        >
+          <img [src]="getPosterUrl(movie.poster_path)" [alt]="movie.title" class="similar-poster" />
+          <div class="similar-info">
+            <p class="similar-title">{{ movie.title }}</p>
+            <p class="similar-rating">★ {{ movie.vote_average.toFixed(1) }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- YouTube Player Modal -->
+<app-youtube-player
+  *ngIf="showPlayer()"
+  [videoKey]="selectedVideo()?.key ?? null"
+  [videoTitle]="selectedVideo()?.name ?? 'Trailer'"
+  (close)="closePlayer()"
+></app-youtube-player>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading()">
+  <div class="spinner"></div>
+  <p>Loading movie details...</p>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="error()">
+  <p class="error-message">{{ error() }}</p>
+  <button class="retry-button" (click)="goBack()">Go Back</button>
+</div>

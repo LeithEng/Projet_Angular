@@ -20,6 +20,18 @@ export const routes: Routes = [
     
   },
   {
+    path: 'movie/:id',
+    loadComponent: () =>
+      import('./pages/movie-detail/movie-detail.component').then((m) => m.MovieDetailComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'tv/:id',
+    loadComponent: () =>
+      import('./pages/tv-detail/tv-detail.component').then((m) => m.TvDetailComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: '/home',
     pathMatch: 'full',
