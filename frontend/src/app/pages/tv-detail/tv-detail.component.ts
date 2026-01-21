@@ -9,13 +9,15 @@ import {
   Crew,
   Review,
   TVShow,
+  Video,
 } from '../../models/tmdb.model';
 import { forkJoin } from 'rxjs';
+import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 
 @Component({
   selector: 'app-tv-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, YoutubePlayerComponent],
   templateUrl: './tv-detail.component.html',
   styleUrl: './tv-detail.component.css',
 })
@@ -25,8 +27,13 @@ export class TvDetailComponent implements OnInit {
   crew = signal<Crew[]>([]);
   reviews = signal<Review[]>([]);
   similarShows = signal<TVShow[]>([]);
+  videos = signal<Video[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+
+  // Trailer player state
+  selectedVideo = signal<Video | null>(null);
+  showPlayer = signal(false);
 
   // Filtered crew members
   creators = signal<Crew[]>([]);
@@ -57,6 +64,7 @@ export class TvDetailComponent implements OnInit {
       credits: this.tmdbService.getTVShowCredits(tvId),
       reviews: this.tmdbService.getTVShowReviews(tvId),
       similar: this.tmdbService.getSimilarTVShows(tvId),
+      videos: this.tmdbService.getTVShowVideos(tvId),
     }).subscribe({
       next: (data) => {
         this.tvDetails.set(data.details);
@@ -64,6 +72,12 @@ export class TvDetailComponent implements OnInit {
         this.crew.set(data.credits.crew);
         this.reviews.set(data.reviews.results);
         this.similarShows.set(data.similar.results.slice(0, 12));
+        
+        // Filter for trailers and teasers
+        const trailers = data.videos.results.filter(
+          (v) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+        );
+        this.videos.set(trailers);
 
         // Filter crew members
         this.creators.set(
@@ -139,6 +153,16 @@ export class TvDetailComponent implements OnInit {
 
   getProducersNames(): string {
     return this.producers().map(p => p.name).join(', ');
+  }
+
+  playTrailer(video: Video): void {
+    this.selectedVideo.set(video);
+    this.showPlayer.set(true);
+  }
+
+  closePlayer(): void {
+    this.showPlayer.set(false);
+    this.selectedVideo.set(null);
   }
 
   goBack(): void {

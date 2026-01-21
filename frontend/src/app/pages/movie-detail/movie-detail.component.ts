@@ -9,13 +9,15 @@ import {
   Crew,
   Review,
   Movie,
+  Video,
 } from '../../models/tmdb.model';
 import { forkJoin } from 'rxjs';
+import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, YoutubePlayerComponent],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.css',
 })
@@ -25,8 +27,13 @@ export class MovieDetailComponent implements OnInit {
   crew = signal<Crew[]>([]);
   reviews = signal<Review[]>([]);
   similarMovies = signal<Movie[]>([]);
+  videos = signal<Video[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+
+  // Trailer player state
+  selectedVideo = signal<Video | null>(null);
+  showPlayer = signal(false);
 
   // Filtered crew members
   director = signal<Crew | null>(null);
@@ -57,6 +64,7 @@ export class MovieDetailComponent implements OnInit {
       credits: this.tmdbService.getMovieCredits(movieId),
       reviews: this.tmdbService.getMovieReviews(movieId),
       similar: this.tmdbService.getSimilarMovies(movieId),
+      videos: this.tmdbService.getMovieVideos(movieId),
     }).subscribe({
       next: (data) => {
         this.movieDetails.set(data.details);
@@ -64,6 +72,12 @@ export class MovieDetailComponent implements OnInit {
         this.crew.set(data.credits.crew);
         this.reviews.set(data.reviews.results);
         this.similarMovies.set(data.similar.results.slice(0, 12));
+        
+        // Filter for trailers and teasers
+        const trailers = data.videos.results.filter(
+          (v) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+        );
+        this.videos.set(trailers);
 
         // Filter crew members
         const director = data.credits.crew.find((c) => c.job === 'Director');
@@ -143,6 +157,16 @@ export class MovieDetailComponent implements OnInit {
 
   getProducersNames(): string {
     return this.producers().map(p => p.name).join(', ');
+  }
+
+  playTrailer(video: Video): void {
+    this.selectedVideo.set(video);
+    this.showPlayer.set(true);
+  }
+
+  closePlayer(): void {
+    this.showPlayer.set(false);
+    this.selectedVideo.set(null);
   }
 
   goBack(): void {

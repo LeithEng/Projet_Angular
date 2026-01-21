@@ -89,6 +89,33 @@
       </div>
     </div>
 
+    <!-- Trailers & Videos Section -->
+    <section class="trailers-section" *ngIf="videos().length > 0">
+      <h2 class="section-title">Trailers & Videos</h2>
+      <div class="trailers-grid">
+        <div class="trailer-card" *ngFor="let video of videos()" (click)="playTrailer(video)">
+          <div class="trailer-thumbnail">
+            <img
+              [src]="'https://img.youtube.com/vi/' + video.key + '/hqdefault.jpg'"
+              [alt]="video.name"
+              class="thumbnail-image"
+            />
+            <div class="play-overlay">
+              <div class="play-button">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="trailer-info">
+            <p class="trailer-name">{{ video.name }}</p>
+            <p class="trailer-type">{{ video.type }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Cast Section -->
     <section class="cast-section" *ngIf="cast().length > 0">
       <h2 class="section-title">Top Cast</h2>
@@ -156,6 +183,14 @@
     </section>
   </div>
 </div>
+
+<!-- YouTube Player Modal -->
+<app-youtube-player
+  *ngIf="showPlayer()"
+  [videoKey]="selectedVideo()?.key ?? null"
+  [videoTitle]="selectedVideo()?.name ?? 'Trailer'"
+  (close)="closePlayer()"
+></app-youtube-player>
 
 <!-- Loading State -->
 <div class="loading-container" *ngIf="loading()">
