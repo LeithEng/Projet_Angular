@@ -5,16 +5,18 @@ import { Movie } from '../../models/tmdb.model';
 import { HeroBannerComponent } from "../../components/hero-banner/hero-banner";
 import { MovieRowComponent } from '../../components/movie-row/movie-row';
 import { NavbarComponent } from '../../shared-componants/navbar/navbar';
+import { FETCH_TYPE } from '../../constants/fetch-type.const';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HeroBannerComponent, MovieRowComponent ,NavbarComponent],
+  imports: [CommonModule, HeroBannerComponent, MovieRowComponent ,NavbarComponent ],
   templateUrl: './movie.component.html',
   styleUrl: "./movie.component.css" 
 })
 export class MovieComponent implements OnInit {
   bannerMovie: Movie | null = null;
+  protected readonly fetchTypes = FETCH_TYPE;
 
   constructor() {}
 
