@@ -14,11 +14,13 @@ import {
 import { forkJoin } from 'rxjs';
 import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 import { DefaultImagePipe } from '../../pipe/default-image-pipe';
+import { CreateReviewComponent } from '../../components/create-review/create-review.component';
+import { ReviewService, ReviewResponse } from '../../services/review.service';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, YoutubePlayerComponent , DefaultImagePipe],
+  imports: [CommonModule, RouterLink, YoutubePlayerComponent, DefaultImagePipe, CreateReviewComponent],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.css',
 })
@@ -27,6 +29,7 @@ export class MovieDetailComponent implements OnInit {
   cast = signal<Cast[]>([]);
   crew = signal<Crew[]>([]);
   reviews = signal<Review[]>([]);
+  userReviews = signal<ReviewResponse[]>([]);
   similarMovies = signal<Movie[]>([]);
   videos = signal<Video[]>([]);
   loading = signal(true);
@@ -44,7 +47,8 @@ export class MovieDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private tmdbService: TmdbService
+    private tmdbService: TmdbService,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit(): void {
@@ -91,6 +95,9 @@ export class MovieDetailComponent implements OnInit {
         this.producers.set(data.credits.crew.filter((c) => c.job === 'Producer').slice(0, 3));
 
         this.loading.set(false);
+        
+        // Load user reviews from database
+        this.loadUserReviews(movieId.toString());
       },
       error: (err) => {
         console.error('Error loading movie data:', err);
@@ -98,6 +105,26 @@ export class MovieDetailComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  loadUserReviews(movieId: string): void {
+    this.reviewService.getReviewsByMovieId(movieId).subscribe({
+      next: (reviews) => {
+        this.userReviews.set(reviews);
+      },
+      error: (err) => {
+        console.error('Error loading user reviews:', err);
+        // Don't show error to user, just log it
+      },
+    });
+  }
+
+  onReviewCreated(): void {
+    // Reload user reviews when a new review is created
+    const movieId = this.movieDetails()?.id;
+    if (movieId) {
+      this.loadUserReviews(movieId.toString());
+    }
   }
 
   getPosterUrl(path: string | null): string {

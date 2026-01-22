@@ -112,9 +112,7 @@
       <h2 class="section-title">Top Cast</h2>
       <div class="cast-grid">
         <div class="cast-card" *ngFor="let member of cast()">
-          <img [src]="getProfileUrl(member.profile_path) | defaultImage " 
-          [alt]="member.name" 
-          class="cast-image" />
+          <img [src]="getProfileUrl(member.profile_path) | defaultImage " [alt]="member.name" class="cast-image" />
           <div class="cast-info">
             <p class="cast-name">{{ member.name }}</p>
             <p class="cast-character">{{ member.character }}</p>
@@ -123,9 +121,40 @@
       </div>
     </section>
 
-    <!-- Reviews Section -->
+    <!-- Create Review Section -->
+    <section class="create-review-section" *ngIf="movieDetails()">
+      <app-create-review [movieId]="movieDetails()!.id.toString()" [movieTitle]="movieDetails()!.title"
+        (reviewCreated)="onReviewCreated()">
+      </app-create-review>
+    </section>
+
+    <!-- User Reviews Section (from our database) -->
+    <section class="reviews-section" *ngIf="userReviews().length > 0">
+      <h2 class="section-title">User Reviews</h2>
+      <div class="reviews-list">
+        <div class="review-card" *ngFor="let review of userReviews()">
+          <div class="review-header">
+            <div class="review-author">
+              <div class="author-avatar-placeholder">
+                {{ review.author.charAt(0).toUpperCase() }}
+              </div>
+              <div class="author-info">
+                <p class="author-name">{{ review.author_details.name }}</p>
+                <p class="review-date">{{ formatDate(review.created_at) }}</p>
+              </div>
+            </div>
+            <div class="review-rating" *ngIf="review.author_details.rating">
+              ★ {{ review.author_details.rating }}/10
+            </div>
+          </div>
+          <p class="review-content">{{ review.content }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TMDB Reviews Section -->
     <section class="reviews-section" *ngIf="reviews().length > 0">
-      <h2 class="section-title">Reviews</h2>
+      <h2 class="section-title">Reviews from TMDB</h2>
       <div class="reviews-list">
         <div class="review-card" *ngFor="let review of reviews()">
           <div class="review-header">
