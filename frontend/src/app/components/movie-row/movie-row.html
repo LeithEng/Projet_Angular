@@ -1,30 +1,36 @@
 <div class="movie-row">
-  <h2 class="row-title">{{ title }}</h2>
+  <h2 class="row-title">{{ title() }}</h2>
 
   <div class="row-slider">
     <div class="slider-container" #scrollContainer (scroll)="onScroll()">
       <div class="posters-wrapper">
-        <div class="poster-item" *ngFor="let movie of movies; let i = index">
-          <div class="poster-card" [class.poster-large]="isLarge" (click)="navigateToDetail(movie.id)">
-            <img [src]="getPoster(movie.poster_path)" [alt]="movie.title" class="poster-image" loading="lazy">
+        @for (item of content(); track item.id) {
+        <div class="poster-item">
+          <div class="poster-card" [class.poster-large]="isLarge()" (click)="navigateToDetail(item)">
+            <img [src]="item.poster_path | posterUrl:'w500'" [alt]="getTitle(item)" class="poster-image" loading="lazy">
 
             <div class="poster-overlay">
               <div class="overlay-content">
-                <h3 class="movie-title">{{ movie.title }}</h3>
+                <h3 class="movie-title">{{ getTitle(item) }}</h3>
                 <div class="movie-info">
-                  <span class="rating" *ngIf="movie.vote_average">
+                  @if (item.vote_average) {
+                  <span class="rating">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
                       <path
                         d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
-                    {{ movie.vote_average | number:'1.1-1' }}
+                    {{ item.vote_average | number:'1.1-1' }}
                   </span>
-                  <span class="year" *ngIf="movie.release_date">{{ movie.release_date | date:'yyyy' }}</span>
+                  }
+                  @if (getDate(item)) {
+                  <span class="year">{{ getDate(item) | date:'yyyy' }}</span>
+                  }
                 </div>
               </div>
             </div>
           </div>
         </div>
+        }
       </div>
     </div>
   </div>

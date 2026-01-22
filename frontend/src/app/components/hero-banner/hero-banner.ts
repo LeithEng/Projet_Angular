@@ -1,7 +1,7 @@
-import { Component, inject, Input, OnChanges } from '@angular/core';
+import { Component, inject, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Movie } from '../../models/tmdb.model';
+import { Movie, TVShow } from '../../models/tmdb.model';
 import { TmdbService } from '../../services/tmdb.service';
 
 @Component({
@@ -11,25 +11,37 @@ import { TmdbService } from '../../services/tmdb.service';
   templateUrl:"./hero-banner.html",
   styleUrl:"./hero-banner.css"
 })
-export class HeroBannerComponent implements OnChanges {
-  @Input() movie: Movie | null = null;
-  backdropUrl: string = '';
+export class HeroBannerComponent {
+  item = input<Movie | TVShow | null>(null);
 
-  constructor(
-  ) {}
+  private tmdbService = inject(TmdbService);
+  private router = inject(Router);
 
-    private tmdbService = inject(TmdbService);
-    private router = inject(Router);
+  backdropUrl = computed(() => {
+    const m = this.item();
+    return m ? this.tmdbService.getBackdropUrl(m.backdrop_path) : '';
+  });
 
-  ngOnChanges() {
-    if (this.movie) {
-      this.backdropUrl = this.tmdbService.getBackdropUrl(this.movie.backdrop_path);
-    }
-  }
+  title = computed(() => {
+    const m = this.item();
+    if (!m) return '';
+    return (m as Movie).title || (m as TVShow).name;
+  });
+
+  releaseDate = computed(() => {
+    const m = this.item();
+    if (!m) return '';
+    return (m as Movie).release_date || (m as TVShow).first_air_date;
+  });
 
   navigateToDetail(): void {
-    if (this.movie) {
-      this.router.navigate(['/movie', this.movie.id]);
+    const m = this.item();
+    if (m) {
+      if ('title' in m) {
+        this.router.navigate(['/movie', m.id]);
+      } else {
+        this.router.navigate(['/tv', m.id]);
+      }
     }
   }
 }

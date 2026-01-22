@@ -1,31 +1,33 @@
 @if (!loading() && tvDetails(); as tv) {
 <div class="tv-detail-container">
   <div class="backdrop-header" [style.background-image]="'url(' + (tv.backdrop_path | tmdbImage:'backdrop') + ')'">
-    <div class="backdrop-overlay"></div>
+    <div class="backdrop-overlay">
+      <div class="header-content">
+        <button class="back-button" (click)="goBack()"><span>←</span> Back</button>
+      </div>
+    </div>
   </div>
 
   <div class="content-wrapper">
     <div class="details-section">
-        <h1 class="title">{{ tv.name }}</h1>
-        <div class="metadata">
-            <span class="rating rating-good">★ {{ tv.vote_average * 10 | number:'1.0-0' }}%</span>
-            <span>First aired: {{ tv.first_air_date | date:'yyyy' }}</span>
-            <span>{{ tv.number_of_seasons }} Seasons</span>
-        </div>
-        <p class="overview">{{ tv.overview }}</p>
+      <h1 class="title">{{ tv.name }}</h1>
+      <div class="metadata">
+        <span class="rating rating-good">★ {{ tv.vote_average * 10 | number:'1.0-0' }}%</span>
+        <span>First aired: {{ tv.first_air_date | date:'yyyy' }}</span>
+        <span>{{ tv.number_of_seasons }} Seasons</span>
+      </div>
+      <p class="overview">{{ tv.overview }}</p>
     </div>
 
-    <app-media-carousel 
-        title="Seasons" 
-        [items]="tv.seasons" 
-        imageType="poster">
+    <app-media-carousel title="Seasons" [items]="tv.seasons" imageType="poster">
     </app-media-carousel>
 
     <app-video-gallery [videos]="videos()" (playVideo)="selectedVideo.set($event)"></app-video-gallery>
 
     <app-media-carousel title="Top Cast" [items]="cast()" imageType="profile"></app-media-carousel>
 
-    <app-media-carousel title="Similar Shows" [items]="similarShows()" (itemClicked)="onShowClick($event)"></app-media-carousel>
+    <app-media-carousel title="Similar Shows" [items]="similarShows()"
+      (itemClicked)="onShowClick($event)"></app-media-carousel>
   </div>
 </div>
 }

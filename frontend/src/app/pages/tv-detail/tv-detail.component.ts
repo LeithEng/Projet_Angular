@@ -50,4 +50,5 @@ export class TvDetailComponent implements OnInit {
   }
 
   onShowClick(show: TVShow) { this.router.navigate(['/tv', show.id]); }
+  goBack() { this.router.navigate(['/tv']); }
 }
