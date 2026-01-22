@@ -1,0 +1,70 @@
+.trailers-section { margin-bottom: 60px; }
+.section-title { font-size: 32px; margin-bottom: 30px; color: #fff; }
+
+.trailers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.trailer-card {
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trailer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.trailer-thumbnail {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.thumbnail-image {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+
+.trailer-card:hover .play-overlay { opacity: 1; }
+
+.play-button {
+  width: 60px; height: 60px;
+  background-color: rgba(229, 9, 20, 0.9);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.trailer-card:hover .play-button { transform: scale(1.2); }
+
+.trailer-info { padding: 15px; }
+
+.trailer-name {
+  font-weight: 600; margin: 0 0 5px 0; font-size: 14px; color: #fff;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+
+.trailer-type { color: #888; margin: 0; font-size: 13px; text-transform: uppercase; }
+
+@media (max-width: 768px) {
+  .trailers-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .section-title { font-size: 24px; }
+}
