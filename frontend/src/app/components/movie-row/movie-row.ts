@@ -1,11 +1,14 @@
 import { Component, ElementRef, inject, input, signal, viewChild, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { TmdbService } from '../../services/tmdb.service';
-import { Movie } from '../../models/tmdb.model';
+import { Movie, TMDBResponse, TVShow } from '../../models/tmdb.model';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
 import { FetchType } from '../../types/fetch-type.type';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
+import { ContentType } from '../../types/content-type.type';
+import { CONTENT_TYPE } from '../../constants/content-type.const';
 
 @Component({
   selector: 'app-movie-row',
@@ -20,12 +23,13 @@ export class MovieRowComponent {
   fetchType = input<FetchType>(FETCH_TYPE.TRENDING);
   genreId = input<string | undefined>(undefined);
   isLarge = input<boolean>(false);
+  contentType = input<ContentType>('movie');
 
   // ViewChild
   scrollContainer = viewChild.required<ElementRef>('scrollContainer');
 
   // State
-  movies = signal<Movie[]>([]);
+  content = signal<(Movie | TVShow)[]>([]);
   currentPage = signal<number>(1);
   isLoading = signal<boolean>(false);
   totalPages = signal<number>(1);
@@ -39,6 +43,7 @@ export class MovieRowComponent {
         // dep tracking
         const type = this.fetchType();
         const genre = this.genreId();
+        const cType = this.contentType();
         
         untracked(() => {
             this.resetAndLoad();
@@ -47,48 +52,67 @@ export class MovieRowComponent {
   }
 
   resetAndLoad() {
-      this.movies.set([]);
+      this.content.set([]);
       this.currentPage.set(1);
       this.totalPages.set(1);
-      this.loadMovies();
+      this.loadContent();
   }
 
-  navigateToDetail(movieId: number): void {
-    this.router.navigate(['/movie', movieId]);
+  navigateToDetail(item: Movie | TVShow): void {
+     if (this.contentType() === 'movie') {
+        this.router.navigate(['/movie', item.id]);
+     } else {
+        this.router.navigate(['/tv', item.id]);
+     }
   }
 
-  loadMovies() {
+  loadContent() {
     if (this.isLoading()) return;
     // Check signal values
     if (this.currentPage() > this.totalPages()) return;
 
     this.isLoading.set(true);
 
-    let obs$;
+    let obs$: Observable<TMDBResponse<Movie> | TMDBResponse<TVShow>>;
     
     // Determine which API call to make
     const type = this.fetchType();
     const page = this.currentPage();
     const gId = this.genreId();
+    const cType = this.contentType();
 
-    if (type === FETCH_TYPE.TRENDING) {
-      obs$ = this.tmdbService.getTrendingMovies(); // Trending usually doesn't paginate via generic endpoint easily, simplifying to popular for pagination or keeping purely trending
-    } else if (type === FETCH_TYPE.TOP_RATED) {
-      obs$ = this.tmdbService.getTopRatedMovies(page);
-    } else if (type === FETCH_TYPE.GENRE && gId) {
-      obs$ = this.tmdbService.discoverMovies({ 
-        with_genres: gId, 
-        page: page.toString() 
-      });
+    if (cType === CONTENT_TYPE.MOVIE) {
+        if (type === FETCH_TYPE.TRENDING) {
+          obs$ = this.tmdbService.getTrendingMovies();
+        } else if (type === FETCH_TYPE.TOP_RATED) {
+          obs$ = this.tmdbService.getTopRatedMovies(page);
+        } else if (type === FETCH_TYPE.GENRE && gId) {
+          obs$ = this.tmdbService.discoverMovies({ 
+            with_genres: gId, 
+            page: page.toString() 
+          });
+        } else {
+           obs$ = this.tmdbService.getPopularMovies(page);
+        }
     } else {
-       // Default to popular if nothing matches
-       obs$ = this.tmdbService.getPopularMovies(page);
+        if (type === FETCH_TYPE.TRENDING) {
+          obs$ = this.tmdbService.getTrendingTVShows();
+        } else if (type === FETCH_TYPE.TOP_RATED) {
+          obs$ = this.tmdbService.getTopRatedTVShows(page);
+        } else if (type === FETCH_TYPE.GENRE && gId) {
+          obs$ = this.tmdbService.discoverTVShows({ 
+            with_genres: gId, 
+            page: page.toString() 
+          });
+        } else {
+           obs$ = this.tmdbService.getPopularTVShows(page);
+        }
     }
 
     obs$.subscribe({
-      next: (res) => {
-        // Append new movies to existing list
-        this.movies.update(current => [...current, ...res.results]);
+      next: (res: any) => {
+        // Append new content to existing list
+        this.content.update(current => [...current, ...res.results]);
         this.totalPages.set(res.total_pages);
         this.isLoading.set(false);
       },
@@ -107,7 +131,15 @@ export class MovieRowComponent {
 
     if (atRightEdge && !this.isLoading()) {
       this.currentPage.update(p => p + 1);
-      this.loadMovies();
+      this.loadContent();
     }
+  }
+
+  getTitle(item: Movie | TVShow): string {
+    return (item as Movie).title || (item as TVShow).name;
+  }
+
+  getDate(item: Movie | TVShow): string {
+    return (item as Movie).release_date || (item as TVShow).first_air_date;
   }
 }

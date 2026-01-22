@@ -1,0 +1,7 @@
+.app-container {
+  min-height: 100vh;
+  background-color: #141414;
+  color: #ffffff;
+  position: relative;
+  overflow-x: hidden;
+}

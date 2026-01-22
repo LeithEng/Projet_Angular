@@ -1,11 +1,11 @@
-@if (movie(); as m) {
+@if (item(); as m) {
 <div class="hero-banner">
   <div class="backdrop-container" [style.backgroundImage]="'url(' + backdropUrl() + ')'">
     <div class="backdrop-overlay"></div>
 
     <div class="hero-content">
       <div class="content-wrapper">
-        <h1 class="hero-title">{{ m.title }}</h1>
+        <h1 class="hero-title">{{ title() }}</h1>
 
         <div class="hero-meta">
           @if (m.vote_average) {
@@ -16,8 +16,8 @@
             {{ m.vote_average | number:'1.1-1' }}
           </span>
           }
-          @if (m.release_date) {
-          <span class="year">{{ m.release_date | date:'yyyy' }}</span>
+          @if (releaseDate()) {
+          <span class="year">{{ releaseDate() | date:'yyyy' }}</span>
           }
         </div>
 

@@ -27,6 +27,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     
   },
+  {
+    path: 'tv',
+    loadComponent: () => import('./pages/tv-show/tv-show.component').then((m) => m.TvShowComponent),
+    canActivate: [authGuard],
+  },
 
   {
     path: 'movie/:id',
