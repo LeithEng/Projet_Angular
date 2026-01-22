@@ -1,0 +1,29 @@
+@if (videos && videos.length > 0) {
+<section class="trailers-section">
+  <h2 class="section-title">Trailers & Videos</h2>
+  <div class="trailers-grid">
+    @for (video of videos; track video.key) {
+    <div class="trailer-card" (click)="playVideo.emit(video)">
+      <div class="trailer-thumbnail">
+        <img 
+          [src]="'https://img.youtube.com/vi/' + video.key + '/hqdefault.jpg'" 
+          [alt]="video.name"
+          class="thumbnail-image" 
+        />
+        <div class="play-overlay">
+          <div class="play-button">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="white">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="trailer-info">
+        <p class="trailer-name">{{ video.name }}</p>
+        <p class="trailer-type">{{ video.type }}</p>
+      </div>
+    </div>
+    }
+  </div>
+</section>
+}
