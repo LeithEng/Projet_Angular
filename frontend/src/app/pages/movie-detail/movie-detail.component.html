@@ -1,0 +1,146 @@
+
+<!-- Loading State -->
+@if (loading()) {
+<div class="loading-container">
+  <div class="spinner"></div>
+  <p>Loading movie details...</p>
+</div>
+}
+
+<!-- Error State -->
+@if (error() && !loading()) {
+<div class="error-container">
+  <p class="error-message">{{ error() }}</p>
+  <button class="retry-button" (click)="goBack()">Go Back</button>
+</div>
+}
+
+<!-- Movie Details -->
+@if (!loading() && !error() && movieDetails(); as movie) {
+<div class="movie-detail-container">
+  <div class="backdrop-header" [style.background-image]="'url(' + (movie.backdrop_path | tmdbImage:'backdrop') + ')'">
+    <div class="backdrop-overlay">
+      <div class="header-content">
+        <button class="back-button" (click)="goBack()"><span>←</span> Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="main-info">
+      <div class="poster-section">
+        <img [src]="movie.poster_path | tmdbImage:'poster'" [alt]="movie.title" class="poster" />
+      </div>
+
+      <div class="details-section">
+        <h1 class="title">{{ movie.title }}</h1>
+        <p class="tagline">{{ movie.tagline }}</p>
+
+        <div class="metadata">
+          <span class="rating rating-good">★ {{ movie.vote_average * 10 | number:'1.0-0' }}%</span>
+          <span>{{ movie.release_date | date:'mediumDate' }}</span>
+          @if (movie.runtime) {
+          <span>{{ movie.runtime }} min</span>
+          }
+        </div>
+
+        <div class="genres">
+          @for (g of movie.genres; track g.id) {
+          <span class="genre-tag">{{ g.name }}</span>
+          }
+        </div>
+
+        <div class="overview-section">
+          <h2>Overview</h2>
+          <p class="overview">{{ movie.overview }}</p>
+        </div>
+
+        <div class="key-crew">
+          @if (director()) {
+          <div class="crew-item">
+            <span class="crew-role">Director</span>
+            <span class="crew-name">{{ director()?.name }}</span>
+          </div>
+          }
+          @if (writers()) {
+          <div class="crew-item">
+            <span class="crew-role">Writers</span>
+            <span class="crew-name">{{ writers() }}</span>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <app-video-gallery [videos]="videos()" (playVideo)="onVideoSelect($event)"></app-video-gallery>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+      <h2>Reviews</h2>
+
+      <app-create-review [movieId]="movie.id.toString()" [movieTitle]="movie.title"
+        (reviewCreated)="onReviewCreated()">
+      </app-create-review>
+
+      <div class="reviews-list">
+        <!-- User Reviews -->
+        @for (review of userReviews(); track review._id || $index) {
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <img [src]="review.author_details?.avatar_path | tmdbImage:'profile'" [alt]="review.author"
+                class="avatar" />
+              <div>
+                <span class="reviewer-name">{{ review.author }}</span>
+                <div class="review-date">{{ review.created_at | date:'mediumDate' }}</div>
+              </div>
+              <span class="review-source">User Review</span>
+            </div>
+            @if (review.author_details?.rating) {
+            <div class="review-rating">★ {{ review.author_details.rating }}/10</div>
+            }
+          </div>
+          <p class="review-content">{{ review.content }}</p>
+        </div>
+        }
+
+        <!-- TMDB Reviews -->
+        @for (review of tmdbReviews(); track review.id) {
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <img [src]="review.author_details?.avatar_path | tmdbImage:'profile'" [alt]="review.author"
+                class="avatar" />
+              <div>
+                <span class="reviewer-name">{{ review.author }}</span>
+                <div class="review-date">{{ review.created_at | date:'mediumDate' }}</div>
+              </div>
+              <span class="review-source">TMDB</span>
+            </div>
+            @if (review.author_details?.rating) {
+            <div class="review-rating">★ {{ review.author_details.rating }}/10</div>
+            }
+          </div>
+          <p class="review-content">{{ review.content }}</p>
+        </div>
+        }
+
+        @if (userReviews().length === 0 && tmdbReviews().length === 0) {
+        <div class="no-reviews">
+          <p>No reviews yet. Be the first to write one!</p>
+        </div>
+        }
+      </div>
+    </div>
+
+    <app-media-carousel title="Top Cast" [items]="cast()" imageType="profile"></app-media-carousel>
+
+    <app-media-carousel title="Similar Movies" [items]="similarMovies()" (itemClicked)="onMovieClick($event)"></app-media-carousel>
+    
+    </div>
+</div>
+}
+
+@if (selectedVideo()) {
+<app-youtube-player [videoKey]="selectedVideo()?.key!" (close)="selectedVideo.set(null)"></app-youtube-player>
+}

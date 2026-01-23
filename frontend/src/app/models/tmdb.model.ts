@@ -95,3 +95,71 @@ export interface Season {
   episode_count: number;
   air_date: string;
 }
+
+export interface Cast {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+  cast_id: number;
+  credit_id: string;
+  gender: number;
+  known_for_department: string;
+}
+
+export interface Crew {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+  credit_id: string;
+  gender: number;
+  known_for_department: string;
+}
+
+export interface Credits {
+  id: number;
+  cast: Cast[];
+  crew: Crew[];
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  author_details: {
+    name: string;
+    username: string;
+    avatar_path: string | null;
+    rating: number | null;
+  };
+  content: string;
+  created_at: string;
+  updated_at: string;
+  url: string;
+}
+
+export interface ReviewsResponse {
+  id: number;
+  page: number;
+  results: Review[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface Video {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+}
+
+export interface VideosResponse {
+  id: number;
+  results: Video[];
+}

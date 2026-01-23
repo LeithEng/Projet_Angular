@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Review } from './reviews/entities/review.entity';
+import { ReviewAuthor } from './reviews/entities/review-author.entity';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { User } from './users/entities/user.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [User],
+        entities: [User, Review, ReviewAuthor],
         synchronize: true,
         logging: false,
       }),
@@ -33,6 +36,7 @@ import { User } from './users/entities/user.entity';
     ]),
     AuthModule,
     UsersModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

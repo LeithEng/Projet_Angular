@@ -1,0 +1,14 @@
+.nav-link {
+  color: #b3b3b3 !important; /* Light gray for inactive */
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #e5e5e5 !important;
+}
+
+.nav-link.active {
+  color: white !important;
+  font-weight: 600;
+  cursor: default;
+}

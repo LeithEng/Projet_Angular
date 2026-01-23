@@ -1,0 +1,14 @@
+<app-navbar></app-navbar>
+<div class="app-container">
+    <app-hero-banner [item]="bannerTvShow()"></app-hero-banner>
+
+    <app-movie-row title="Trending TV Shows" [fetchType]="fetchTypes.TRENDING" contentType="tv"
+        [isLarge]="true"></app-movie-row>
+    <app-movie-row title="Top Rated TV Shows" [fetchType]="fetchTypes.TOP_RATED" contentType="tv"></app-movie-row>
+    <app-movie-row title="Action & Adventure" [fetchType]="fetchTypes.GENRE" genreId="10759"
+        contentType="tv"></app-movie-row>
+    <app-movie-row title="Comedy" [fetchType]="fetchTypes.GENRE" genreId="35" contentType="tv"></app-movie-row>
+    <app-movie-row title="Sci-Fi & Fantasy" [fetchType]="fetchTypes.GENRE" genreId="10765"
+        contentType="tv"></app-movie-row>
+    <app-movie-row title="Documentaries" [fetchType]="fetchTypes.GENRE" genreId="99" contentType="tv"></app-movie-row>
+</div>

@@ -1,0 +1,64 @@
+<div class="create-review-container">
+    <div class="create-review-header">
+        <h3>Write a Review</h3>
+        @if (movieTitle) {
+        <p>Share your thoughts about {{ movieTitle }}</p>
+        }
+    </div>
+
+    @if (!isAuthenticated) {
+    <div class="login-prompt">
+        <p>Please log in to write a review</p>
+        <a routerLink="/login" class="login-link">Log In</a>
+    </div>
+    }
+
+    @if (isAuthenticated) {
+    <form class="review-form" (ngSubmit)="submitReview()">
+        @if (error()) {
+        <div class="alert alert-error">
+            {{ error() }}
+        </div>
+        }
+
+        @if (success()) {
+        <div class="alert alert-success">
+            ✓ Review submitted successfully!
+        </div>
+        }
+
+        <div class="form-group">
+            <label>Rating (Optional)</label>
+            <div class="rating-selector">
+                @for (star of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track star) {
+                <button type="button" class="star-button" [class.active]="rating() !== null && star <= rating()!"
+                    (click)="setRating(star)" [attr.aria-label]="'Rate ' + star + ' out of 10'">
+                    ★
+                </button>
+                }
+                @if (rating()) {
+                <span class="rating-text">
+                    {{ rating() }}/10
+                </span>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="review-content">Your Review *</label>
+            <textarea id="review-content" class="review-textarea" [value]="content()" #reviewContent
+                (input)="content.set(reviewContent.value)" placeholder="What did you think about this movie?" required
+                [disabled]="submitting()"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancelReview()" [disabled]="submitting()">
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting() || !content().trim()">
+                {{ submitting() ? 'Submitting...' : 'Submit Review' }}
+            </button>
+        </div>
+    </form>
+    }
+</div>

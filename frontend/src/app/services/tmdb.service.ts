@@ -9,6 +9,9 @@ import {
   MovieDetails,
   TVShowDetails,
   Genre,
+  Credits,
+  ReviewsResponse,
+  VideosResponse,
 } from '../models/tmdb.model';
 
 @Injectable({
@@ -145,6 +148,74 @@ export class TmdbService {
     return this.http
       .get<TMDBResponse<TVShow>>(`${this.BASE_URL}/discover/tv`, { params: this.getParams(params) })
       .pipe(catchError(this.handleError));
+  }
+
+  getMovieCredits(movieId: number): Observable<Credits> {
+    return this.http
+      .get<Credits>(`${this.BASE_URL}/movie/${movieId}/credits`, {
+        params: this.getParams(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTVShowCredits(tvId: number): Observable<Credits> {
+    return this.http
+      .get<Credits>(`${this.BASE_URL}/tv/${tvId}/credits`, {
+        params: this.getParams(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getMovieReviews(movieId: number, page: number = 1): Observable<ReviewsResponse> {
+    return this.http
+      .get<ReviewsResponse>(`${this.BASE_URL}/movie/${movieId}/reviews`, {
+        params: this.getParams({ page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTVShowReviews(tvId: number, page: number = 1): Observable<ReviewsResponse> {
+    return this.http
+      .get<ReviewsResponse>(`${this.BASE_URL}/tv/${tvId}/reviews`, {
+        params: this.getParams({ page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getSimilarMovies(movieId: number, page: number = 1): Observable<TMDBResponse<Movie>> {
+    return this.http
+      .get<TMDBResponse<Movie>>(`${this.BASE_URL}/movie/${movieId}/similar`, {
+        params: this.getParams({ page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getSimilarTVShows(tvId: number, page: number = 1): Observable<TMDBResponse<TVShow>> {
+    return this.http
+      .get<TMDBResponse<TVShow>>(`${this.BASE_URL}/tv/${tvId}/similar`, {
+        params: this.getParams({ page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getMovieVideos(movieId: number): Observable<VideosResponse> {
+    return this.http
+      .get<VideosResponse>(`${this.BASE_URL}/movie/${movieId}/videos`, {
+        params: this.getParams(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTVShowVideos(tvId: number): Observable<VideosResponse> {
+    return this.http
+      .get<VideosResponse>(`${this.BASE_URL}/tv/${tvId}/videos`, {
+        params: this.getParams(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getProfileUrl(path: string | null, size: string = 'w185'): string {
+    return path ? `${this.IMAGE_BASE_URL}/${size}${path}` : '/assets/no-avatar.png';
   }
 
   private handleError(error: any): Observable<never> {

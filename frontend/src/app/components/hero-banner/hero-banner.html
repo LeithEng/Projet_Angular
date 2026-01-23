@@ -1,0 +1,48 @@
+@if (item(); as m) {
+<div class="hero-banner">
+  <div class="backdrop-container" [style.backgroundImage]="'url(' + backdropUrl() + ')'">
+    <div class="backdrop-overlay"></div>
+
+    <div class="hero-content">
+      <div class="content-wrapper">
+        <h1 class="hero-title">{{ title() }}</h1>
+
+        <div class="hero-meta">
+          @if (m.vote_average) {
+          <span class="rating">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            {{ m.vote_average | number:'1.1-1' }}
+          </span>
+          }
+          @if (releaseDate()) {
+          <span class="year">{{ releaseDate() | date:'yyyy' }}</span>
+          }
+        </div>
+
+        <p class="hero-overview">{{ m.overview }}</p>
+
+        <div class="hero-buttons">
+          <button class="btn btn-play" (click)="navigateToDetail()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Play
+          </button>
+          <button class="btn btn-info" (click)="navigateToDetail()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            More Info
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-fade-bottom"></div>
+</div>
+}

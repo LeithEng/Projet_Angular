@@ -1,0 +1,33 @@
+@if (items && items.length > 0) {
+<section class="carousel-section">
+  <h2 class="section-title">{{ title }}</h2>
+  <div class="carousel-grid">
+    @for (item of items; track item.id) {
+    <div class="carousel-card" (click)="itemClicked.emit(item)">
+      <img 
+        [src]="(item.poster_path || item.profile_path) | tmdbImage:imageType" 
+        [alt]="item.title || item.name" 
+        class="card-image" 
+      />
+      <div class="card-info">
+        <p class="card-name">{{ item.title || item.name }}</p>
+        
+        @if (item.character) {
+        <p class="card-subtitle">{{ item.character }}</p>
+        }
+        
+        @if (item.episode_count) {
+        <p class="card-subtitle">{{ item.episode_count }} Episodes</p>
+        }
+        
+        @if (item.vote_average && !item.character) {
+        <p class="card-rating">
+          ★ {{ item.vote_average.toFixed(1) }}
+        </p>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</section>
+}
