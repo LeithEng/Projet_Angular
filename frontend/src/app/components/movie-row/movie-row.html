@@ -7,11 +7,12 @@
         @for (item of content$ | async; track item.id) {
         <div class="poster-item">
           <div class="poster-card" [class.poster-large]="isLarge()" (click)="navigateToDetail(item)">
-            <img [src]="item.poster_path | posterUrl:'w500'" [alt]="getTitle(item)" class="poster-image" loading="lazy">
+            <img [src]="item.poster_path | posterUrl:'w500'" [alt]="item | itemTitle" class="poster-image"
+              loading="lazy">
 
             <div class="poster-overlay">
               <div class="overlay-content">
-                <h3 class="movie-title">{{ getTitle(item) }}</h3>
+                <h3 class="movie-title">{{ item | itemTitle }}</h3>
                 <div class="movie-info">
                   @if (item.vote_average) {
                   <span class="rating">
@@ -22,8 +23,8 @@
                     {{ item.vote_average | number:'1.1-1' }}
                   </span>
                   }
-                  @if (getDate(item)) {
-                  <span class="year">{{ getDate(item) | date:'yyyy' }}</span>
+                  @if (item | itemDate) {
+                  <span class="year">{{ (item | itemDate) | date:'yyyy' }}</span>
                   }
                 </div>
               </div>

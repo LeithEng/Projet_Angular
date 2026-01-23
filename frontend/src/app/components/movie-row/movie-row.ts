@@ -7,6 +7,8 @@ import { catchError, map, scan, shareReplay, startWith, switchMap, tap, withLate
 import { TmdbService } from '../../services/tmdb.service';
 import { Movie, TMDBResponse, TVShow } from '../../models/tmdb.model';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
+import { ItemTitlePipe } from '../../pipe/item-title.pipe';
+import { ItemDatePipe } from '../../pipe/item-date.pipe';
 import { FetchType } from '../../types/fetch-type.type';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
 import { ContentType } from '../../types/content-type.type';
@@ -30,7 +32,7 @@ const INITIAL_STATE: RowViewModel = {
 @Component({
   selector: 'app-movie-row',
   standalone: true,
-  imports: [CommonModule, PosterUrlPipe],
+  imports: [CommonModule, PosterUrlPipe, ItemTitlePipe, ItemDatePipe],
   templateUrl: './movie-row.html',
   styleUrl: "./movie-row.css"
 })
@@ -145,8 +147,4 @@ export class MovieRowComponent {
       return this.tmdbService.getPopularTVShows(page);
     }
   }
-
-  // Helpers
-  getTitle(item: any) { return item.title || item.name; }
-  getDate(item: any) { return item.release_date || item.first_air_date; }
 }
