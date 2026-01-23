@@ -38,6 +38,7 @@ export class MovieDetailComponent implements OnInit {
   similarMovies = signal<Movie[]>([]);
   videos = signal<Video[]>([]);
   userReviews = signal<any[]>([]);
+  tmdbReviews = signal<Review[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   selectedVideo = signal<Video | null>(null);
@@ -63,6 +64,12 @@ export class MovieDetailComponent implements OnInit {
           credits: this.tmdbService.getMovieCredits(id),
           similar: this.tmdbService.getSimilarMovies(id),
           videos: this.tmdbService.getMovieVideos(id),
+          tmdbReviews: this.tmdbService.getMovieReviews(id).pipe(
+            catchError(err => {
+              console.warn('Failed to load TMDB reviews:', err);
+              return of({ id: id, page: 1, results: [], total_pages: 0, total_results: 0 });
+            })
+          ),
           userReviews: this.reviewService.getReviewsByMovieId(id.toString()).pipe(
             catchError(err => {
               console.warn('Failed to load user reviews:', err);
@@ -78,6 +85,7 @@ export class MovieDetailComponent implements OnInit {
         this.similarMovies.set(data.similar.results.slice(0, 12));
         this.videos.set(data.videos.results.filter(v => v.site === 'YouTube'));
         this.userReviews.set(data.userReviews || []);
+        this.tmdbReviews.set(data.tmdbReviews.results || []);
         
         // Crew logic
         this.director.set(data.credits.crew.find(c => c.job === 'Director') || null);
@@ -101,5 +109,14 @@ export class MovieDetailComponent implements OnInit {
   // Event handlers
   onVideoSelect(video: Video) { this.selectedVideo.set(video); }
   onMovieClick(movie: Movie) { this.router.navigate(['/movie', movie.id]); }
+  onReviewCreated() {
+    if (this.movieDetails()) {
+      const id = this.movieDetails()!.id;
+      this.reviewService.getReviewsByMovieId(id.toString()).subscribe({
+        next: (reviews) => this.userReviews.set(reviews),
+        error: (err) => console.error('Error refreshing reviews:', err)
+      });
+    }
+  }
   goBack() { this.router.navigate(['/movie']); }
 }
