@@ -9,11 +9,12 @@ import { MediaCarouselComponent } from '../../shared-componants/media-carousel/m
 import { VideoGalleryComponent } from '../../shared-componants/video-gallery/video-gallery.component';
 import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 import { TmdbImagePipe } from '../../pipe/tmdb-image.pipe';
+import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 
 @Component({
   selector: 'app-tv-detail',
   standalone: true,
-  imports: [CommonModule, MediaCarouselComponent, VideoGalleryComponent, YoutubePlayerComponent, TmdbImagePipe],
+  imports: [CommonModule, MediaCarouselComponent, VideoGalleryComponent, YoutubePlayerComponent, TmdbImagePipe , NavbarComponent],
   templateUrl: './tv-detail.component.html',
   styleUrl: './tv-detail.component.css'
 })

@@ -4,7 +4,7 @@
   <div class="row-slider">
     <div class="slider-container" #scrollContainer (scroll)="onScroll()">
       <div class="posters-wrapper">
-        @for (item of content(); track item.id) {
+        @for (item of content$ | async; track item.id) {
         <div class="poster-item">
           <div class="poster-card" [class.poster-large]="isLarge()" (click)="navigateToDetail(item)">
             <img [src]="item.poster_path | posterUrl:'w500'" [alt]="getTitle(item)" class="poster-image" loading="lazy">
