@@ -3,27 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TmdbService } from '../../services/tmdb.service';
-import { Movie, Genre } from '../../models/tmdb.model';
+import { Movie, TVShow, Genre } from '../../models/tmdb.model';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { of, forkJoin } from 'rxjs';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
+import { ContentType } from '../../types/content-type.type';
+import { CONTENT_TYPE } from '../../constants/content-type.const';
 
-type ContentType = 'all' | 'movie' | 'tv';
+type FilterType = 'all' | ContentType;
 type SortOption = 'popularity' | 'rating' | 'date';
 
-interface SearchResult {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  vote_average: number;
-  release_date?: string;
-  first_air_date?: string;
-  media_type?: string;
-  overview: string;
-  genre_ids?: number[];
+interface SearchItem {
+  item: Movie | TVShow;
+  type: ContentType;
 }
 
 @Component({
@@ -35,33 +28,46 @@ interface SearchResult {
 })
 export class SearchComponent implements OnInit {
   private tmdbService = inject(TmdbService);
+  //Gives access to the current route information
   private route = inject(ActivatedRoute);
+  //Navigates programmatically between pages
   private router = inject(Router);
+  //Lets you clean up resources when the component is destroyed
   private destroyRef = inject(DestroyRef);
 
+  //reactive form control for the search input : holds value of input
   searchControl = new FormControl('');
-  searchResults = signal<SearchResult[]>([]);
-  filteredResults = signal<SearchResult[]>([]);
+  searchResults = signal<SearchItem[]>([]);
+  filteredResults = signal<SearchItem[]>([]);
   isLoading = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
+  //Boolean signal tracking if a search was performed
   hasSearched = signal(false);
-  
-  activeFilter = signal<ContentType>('all');
+  //filter 7asb content type
+  activeFilter = signal<FilterType>('all');
   activeSortOption = signal<SortOption>('popularity');
-  
+
   // Genre filters
+  //A list of all available genres
   allGenres = signal<Genre[]>([]);
+  //The IDs of genres selected by the user
   selectedGenres = signal<number[]>([]);
+  //Boolean to show/hide the filters panel
   showFilters = signal(false);
+
+  // Content type constants
+  //A read-only class property : Exposes the MOVIE enum/value to the template
+  readonly MOVIE = CONTENT_TYPE.MOVIE;
+  readonly TV = CONTENT_TYPE.TV;
 
   // Computed counts for filters
   get movieCount(): number {
-    return this.searchResults().filter(r => r.media_type === 'movie').length;
+    return this.searchResults().filter((r) => r.type === CONTENT_TYPE.MOVIE).length;
   }
 
   get tvCount(): number {
-    return this.searchResults().filter(r => r.media_type === 'tv').length;
+    return this.searchResults().filter((r) => r.type === CONTENT_TYPE.TV).length;
   }
 
   get totalCount(): number {
@@ -69,77 +75,148 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Load genres
+    // 1️⃣ Load available genres when component initializes
     this.loadGenres();
 
-    // Get query param from URL
+    // 2️⃣ Listen to URL query parameters (?q=...)
+    // this.route.queryParams is an observable that emits whenever the query parameters change (ActivatedRoute.queryParams emits ONLY when Angular navigation happens.)
+    // This allows restoring search state when refreshing or sharing the URL
     this.route.queryParams
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(params => {
+      //pipe() is a method that lets you transform, filter, control, or combine an Observable before subscribing to it.
+      .pipe(
+        // Automatically unsubscribe when component is destroyed
+        //If you don’t unsubscribe → ❌ memory leaks
+        takeUntilDestroyed(this.destroyRef),
+      )
+      //emis params
+      .subscribe((params) => {
         const query = params['q'];
+
+        // If a search query exists in the URL
         if (query) {
+          // Update the input field WITHOUT triggering valueChanges
+          // Normally, updating the value triggers valueChanges Observable
           this.searchControl.setValue(query, { emitEvent: false });
+          //if not false :
+
+          // Manually trigger search using the query from URL
           this.performSearch(query);
         }
       });
 
-    // Listen to search input changes
+    // 3️⃣ Listen to user typing in the search input
     this.searchControl.valueChanges
       .pipe(
+        // Wait 500ms after user stops typing
+        // Prevents firing API calls on every keystroke
         debounceTime(500),
+
+        // Only emit when value actually changes
         distinctUntilChanged(),
+
+        // Side effect: show loading spinner immediately
         tap(() => this.isLoading.set(true)),
-        switchMap(query => {
+
+        /*Takes each value from the source Observable
+        Maps it to a new inner Observable (like an API call)
+        Automatically cancels the previous inner Observable if a new value comes in*/
+        switchMap((query) => {
           const term = query?.trim() || '';
+
+          // If search term is too short
           if (term.length < 2) {
+            // Reset all search state
             this.resetSearch();
-            return of({ movies: { results: [], total_pages: 0 }, tvShows: { results: [], total_pages: 0 } });
+
+            // Return empty observable result to keep stream alive
+            //of() is a function from RxJS : It creates an Observable that emits the value you pass and then completes immediately
+            return of({
+              movies: { results: [], total_pages: 0 },
+              tvShows: { results: [], total_pages: 0 },
+            });
           }
+
+          // Mark that the user has performed a search
           this.hasSearched.set(true);
+
+          // Call API for movies + TV shows (page 1)
           return this.searchContent(term, 1);
         }),
-        takeUntilDestroyed(this.destroyRef)
+
+        // Ensure cleanup when component is destroyed
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
+        // 4️⃣ Successful API response
+        // next = function that runs every time the Observable emits a value
         next: ({ movies, tvShows }) => {
-          const movieResults = movies.results.map(m => ({ ...m, media_type: 'movie' }));
-          const tvResults = tvShows.results.map(t => ({ ...t, media_type: 'tv' }));
-          
+          // Map movie results to unified SearchItem format
+          const movieResults: SearchItem[] = movies.results.map((m) => ({
+            item: m,
+            type: CONTENT_TYPE.MOVIE,
+          }));
+
+          // Map TV results to unified SearchItem format
+          const tvResults: SearchItem[] = tvShows.results.map((t) => ({
+            item: t,
+            type: CONTENT_TYPE.TV,
+          }));
+
+          // Combine movies + TV results into one array
           this.searchResults.set([...movieResults, ...tvResults]);
+
+          // Apply active filters (type, genre, sorting)
           this.applyFilters();
+
+          // Set total pages based on max pages from both APIs
+          //Pagination continues until both result sets are exhausted
           this.totalPages.set(Math.max(movies.total_pages, tvShows.total_pages));
+
+          // Reset pagination to first page
           this.currentPage.set(1);
+
+          // Hide loading spinner
           this.isLoading.set(false);
+
+          // Update URL (?q=searchTerm)
           this.updateURL();
         },
+
+        // 5️⃣ Error handling
         error: (err) => {
           console.error('Search error:', err);
+
+          // Always stop loading spinner on error
           this.isLoading.set(false);
-        }
+        },
       });
   }
 
   private loadGenres(): void {
+    /*Runs multiple Observables in parallel
+    Waits until ALL of them complete
+    Emits ONE single value with all results together
+    Then completes*/
     forkJoin({
       movieGenres: this.tmdbService.getMovieGenres(),
-      tvGenres: this.tmdbService.getTVGenres()
+      tvGenres: this.tmdbService.getTVGenres(),
     }).subscribe({
       next: ({ movieGenres, tvGenres }) => {
         // Combine and remove duplicates
         const allGenresMap = new Map<number, Genre>();
-        [...movieGenres.genres, ...tvGenres.genres].forEach(genre => {
+        [...movieGenres.genres, ...tvGenres.genres].forEach((genre) => {
           allGenresMap.set(genre.id, genre);
         });
         this.allGenres.set(Array.from(allGenresMap.values()));
       },
-      error: (err) => console.error('Error loading genres:', err)
+      error: (err) => console.error('Error loading genres:', err),
     });
   }
 
   toggleGenre(genreId: number): void {
     const current = this.selectedGenres();
     if (current.includes(genreId)) {
-      this.selectedGenres.set(current.filter(id => id !== genreId));
+      this.selectedGenres.set(current.filter((id) => id !== genreId));
     } else {
       this.selectedGenres.set([...current, genreId]);
     }
@@ -152,7 +229,7 @@ export class SearchComponent implements OnInit {
   }
 
   toggleFilters(): void {
-    this.showFilters.update(v => !v);
+    this.showFilters.update((v) => !v);
   }
 
   private searchContent(query: string, page: number) {
@@ -162,20 +239,25 @@ export class SearchComponent implements OnInit {
 
     return forkJoin({
       movies: movieSearch$,
-      tvShows: tvSearch$
+      tvShows: tvSearch$,
     });
   }
 
   performSearch(query: string): void {
     this.isLoading.set(true);
     this.hasSearched.set(true);
-    
+
     this.searchContent(query, 1).subscribe({
       next: ({ movies, tvShows }) => {
-        // Combine and mark results with media_type
-        const movieResults = movies.results.map(m => ({ ...m, media_type: 'movie' }));
-        const tvResults = tvShows.results.map(t => ({ ...t, media_type: 'tv' }));
-        
+        const movieResults: SearchItem[] = movies.results.map((m) => ({
+          item: m,
+          type: CONTENT_TYPE.MOVIE,
+        }));
+        const tvResults: SearchItem[] = tvShows.results.map((t) => ({
+          item: t,
+          type: CONTENT_TYPE.TV,
+        }));
+
         this.searchResults.set([...movieResults, ...tvResults]);
         this.applyFilters();
         this.totalPages.set(Math.max(movies.total_pages, tvShows.total_pages));
@@ -185,11 +267,11 @@ export class SearchComponent implements OnInit {
       error: (err) => {
         console.error('Search error:', err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
-  setFilter(filter: ContentType): void {
+  setFilter(filter: FilterType): void {
     this.activeFilter.set(filter);
     this.applyFilters();
   }
@@ -204,36 +286,45 @@ export class SearchComponent implements OnInit {
 
     // Filter by content type
     if (this.activeFilter() !== 'all') {
-      results = results.filter(item => item.media_type === this.activeFilter());
+      results = results.filter((searchItem) => searchItem.type === this.activeFilter());
     }
 
     // Filter by genres
     if (this.selectedGenres().length > 0) {
-      results = results.filter(item => {
-        if (!item.genre_ids || item.genre_ids.length === 0) return false;
+      results = results.filter((searchItem) => {
+        const genreIds = searchItem.item.genre_ids;
+        if (!genreIds || genreIds.length === 0) return false;
         // Check if item has at least one of the selected genres
-        return this.selectedGenres().some(genreId => item.genre_ids!.includes(genreId));
+        return this.selectedGenres().some((genreId) => genreIds.includes(genreId));
       });
     }
 
     // Sort results
     switch (this.activeSortOption()) {
       case 'popularity':
-        results.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+        results.sort((a, b) => (b.item.vote_average || 0) - (a.item.vote_average || 0));
         break;
       case 'rating':
-        results.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+        results.sort((a, b) => (b.item.vote_average || 0) - (a.item.vote_average || 0));
         break;
       case 'date':
         results.sort((a, b) => {
-          const dateA = new Date(a.release_date || a.first_air_date || 0).getTime();
-          const dateB = new Date(b.release_date || b.first_air_date || 0).getTime();
+          const dateA = this.getItemDate(a);
+          const dateB = this.getItemDate(b);
           return dateB - dateA;
         });
         break;
     }
 
     this.filteredResults.set(results);
+  }
+
+  private getItemDate(searchItem: SearchItem): number {
+    if (searchItem.type === CONTENT_TYPE.MOVIE) {
+      return new Date((searchItem.item as Movie).release_date || 0).getTime();
+    } else {
+      return new Date((searchItem.item as TVShow).first_air_date || 0).getTime();
+    }
   }
 
   loadMore(): void {
@@ -245,10 +336,16 @@ export class SearchComponent implements OnInit {
 
     this.searchContent(query, nextPage).subscribe({
       next: ({ movies, tvShows }) => {
-        const movieResults = movies.results.map(m => ({ ...m, media_type: 'movie' }));
-        const tvResults = tvShows.results.map(t => ({ ...t, media_type: 'tv' }));
-        
-        this.searchResults.update(current => [...current, ...movieResults, ...tvResults]);
+        const movieResults: SearchItem[] = movies.results.map((m) => ({
+          item: m,
+          type: CONTENT_TYPE.MOVIE,
+        }));
+        const tvResults: SearchItem[] = tvShows.results.map((t) => ({
+          item: t,
+          type: CONTENT_TYPE.TV,
+        }));
+
+        this.searchResults.update((current) => [...current, ...movieResults, ...tvResults]);
         this.applyFilters();
         this.currentPage.set(nextPage);
         this.isLoading.set(false);
@@ -256,26 +353,33 @@ export class SearchComponent implements OnInit {
       error: (err) => {
         console.error('Load more error:', err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
-  navigateToDetail(item: SearchResult): void {
-    const type = item.media_type === 'tv' ? 'tv' : 'movie';
-    this.router.navigate([`/${type}`, item.id]);
+  navigateToDetail(searchItem: SearchItem): void {
+    this.router.navigate([`/${searchItem.type}`, searchItem.item.id]);
   }
 
-  getTitle(item: SearchResult): string {
-    return item.title || item.name || 'Untitled';
+  getTitle(searchItem: SearchItem): string {
+    if (searchItem.type === CONTENT_TYPE.MOVIE) {
+      return (searchItem.item as Movie).title;
+    }
+    return (searchItem.item as TVShow).name;
   }
 
-  getYear(item: SearchResult): string {
-    const date = item.release_date || item.first_air_date;
+  getYear(searchItem: SearchItem): string {
+    let date: string;
+    if (searchItem.type === CONTENT_TYPE.MOVIE) {
+      date = (searchItem.item as Movie).release_date;
+    } else {
+      date = (searchItem.item as TVShow).first_air_date;
+    }
     return date ? new Date(date).getFullYear().toString() : '';
   }
 
-  getMediaTypeBadge(item: SearchResult): string {
-    return item.media_type === 'tv' ? 'TV Show' : 'Movie';
+  getMediaTypeBadge(searchItem: SearchItem): string {
+    return searchItem.type === CONTENT_TYPE.TV ? 'TV Show' : 'Movie';
   }
 
   private resetSearch(): void {
