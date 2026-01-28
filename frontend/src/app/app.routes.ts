@@ -18,14 +18,12 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
     canActivate: [authGuard],
-    
   },
 
   {
     path: 'movie',
     loadComponent: () => import('./pages/movie/movie.component').then((m) => m.MovieComponent),
     canActivate: [authGuard],
-    
   },
   {
     path: 'tv',
@@ -46,13 +44,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'search',
+    loadComponent: () => import('./pages/search/search.component').then((m) => m.SearchComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: '/home',
     pathMatch: 'full',
   },
   {
     path: '**',
-    loadComponent: () =>
-      import('./pages/not-found/not-found').then((m) => m.NotFoundComponent),
+    loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFoundComponent),
   },
 ];

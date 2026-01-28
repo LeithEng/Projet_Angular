@@ -3,6 +3,13 @@
   <div class="search-hero">
     <div class="container">
       <div class="search-hero-content">
+        <button class="back-button" (click)="goBack()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+          </svg>
+          <span>Back</span>
+        </button>
+
         <h1 class="search-title">Search for Movies & TV Shows</h1>
         <p class="search-subtitle">Discover thousands of movies and series</p>
 
@@ -44,7 +51,7 @@
             (click)="setFilter('all')"
           >
             All
-            <span class="count">{{ searchResults().length }}</span>
+            <span class="count">{{ totalCount }}</span>
           </button>
           <button
             class="filter-tab"
@@ -52,10 +59,7 @@
             (click)="setFilter('movie')"
           >
             Movies
-            <span
-              class="count"
-              >{{ searchResults().filter(r => r.media_type === 'movie').length }}</span
-            >
+            <span class="count">{{ movieCount }}</span>
           </button>
           <button
             class="filter-tab"
@@ -63,24 +67,58 @@
             (click)="setFilter('tv')"
           >
             TV Shows
-            <span
-              class="count"
-              >{{ searchResults().filter(r => r.media_type === 'tv').length }}</span
-            >
+            <span class="count">{{ tvCount }}</span>
           </button>
         </div>
 
-        <div class="sort-dropdown">
-          <label for="sort">Sort by:</label>
-          <select
-            id="sort"
-            [value]="activeSortOption()"
-            (change)="setSortOption($any($event.target).value)"
+        <div class="right-controls">
+          <button class="filters-toggle" (click)="toggleFilters()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
+            </svg>
+            Filters
+            <span *ngIf="selectedGenres().length > 0" class="filter-badge">{{
+              selectedGenres().length
+            }}</span>
+          </button>
+
+          <div class="sort-dropdown">
+            <label for="sort">Sort by:</label>
+            <select
+              id="sort"
+              [value]="activeSortOption()"
+              (change)="setSortOption($any($event.target).value)"
+            >
+              <option value="popularity">Popularity</option>
+              <option value="rating">Rating</option>
+              <option value="date">Release Date</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div class="filters-panel" [class.show]="showFilters()">
+        <div class="filters-header">
+          <h3>Filter by Genres</h3>
+          <button
+            class="clear-filters-btn"
+            (click)="clearGenres()"
+            *ngIf="selectedGenres().length > 0"
           >
-            <option value="popularity">Popularity</option>
-            <option value="rating">Rating</option>
-            <option value="date">Release Date</option>
-          </select>
+            Clear All
+          </button>
+        </div>
+
+        <div class="genre-filters">
+          <button
+            *ngFor="let genre of allGenres()"
+            class="genre-filter-btn"
+            [class.active]="selectedGenres().includes(genre.id)"
+            (click)="toggleGenre(genre.id)"
+          >
+            {{ genre.name }}
+          </button>
         </div>
       </div>
 
@@ -93,7 +131,9 @@
         >
           <div class="card-poster">
             <img
-              [src]="item.poster_path | posterUrl: 'w342'"
+              [src]="
+                item.poster_path ? (item.poster_path | posterUrl: 'w342') : '/assets/no-avatar.png'
+              "
               [alt]="getTitle(item)"
               class="poster-img"
             />

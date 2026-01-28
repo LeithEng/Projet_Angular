@@ -31,6 +31,7 @@
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
+  padding-top: 3rem;
 }
 
 .search-title {
@@ -38,6 +39,7 @@
   font-weight: 700;
   color: #fff;
   margin-bottom: 1rem;
+  margin-top: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -45,6 +47,29 @@
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 2.5rem;
+}
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Main Search Bar */
@@ -119,8 +144,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -197,6 +228,125 @@
 .sort-dropdown select option {
   background: #1a1a1a;
   color: #fff;
+}
+
+.sort-dropdown select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* Filters Toggle Button */
+.filters-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.filters-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.filter-badge {
+  background: #e50914;
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Advanced Filters Panel */
+.filters-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.filters-panel.show {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filters-header h3 {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.clear-filters-btn {
+  background: transparent;
+  border: 1px solid rgba(229, 9, 20, 0.5);
+  color: #e50914;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover {
+  background: rgba(229, 9, 20, 0.1);
+  border-color: #e50914;
+}
+
+.genre-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.genre-filter-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.genre-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.genre-filter-btn.active {
+  background: #e50914;
+  border-color: #e50914;
+  color: #fff;
+  font-weight: 600;
+}
+
+.genre-filter-btn.active:hover {
+  background: #f40612;
 }
 
 /* Results Grid */
@@ -439,8 +589,18 @@
 }
 
 @media (max-width: 768px) {
+  .search-hero-content {
+    padding-top: 1rem;
+  }
+
+  .back-button {
+    position: static;
+    margin-bottom: 1.5rem;
+  }
+
   .search-title {
     font-size: 2rem;
+    margin-top: 0;
   }
 
   .search-subtitle {
@@ -461,8 +621,29 @@
     align-items: stretch;
   }
 
+  .right-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filters-toggle,
+  .sort-dropdown {
+    width: 100%;
+    justify-content: center;
+  }
+
   .filter-tabs {
     justify-content: center;
+    width: 100%;
+  }
+
+  .genre-filters {
+    gap: 0.5rem;
+  }
+
+  .genre-filter-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .results-grid {
