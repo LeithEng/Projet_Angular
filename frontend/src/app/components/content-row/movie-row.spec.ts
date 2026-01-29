@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MovieRowComponent } from './movie-row';
+import { ContentRowComponent } from './content-row';
 
 describe('MovieRow', () => {
-  let component: MovieRowComponent;
-  let fixture: ComponentFixture<MovieRowComponent>;
+  let component: ContentRowComponent;
+  let fixture: ComponentFixture<ContentRowComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MovieRowComponent]
+      imports: [ContentRowComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MovieRowComponent);
+    fixture = TestBed.createComponent(ContentRowComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,17 @@
+<div class="movie-row">
+  <h2 class="row-title">{{ title() }}</h2>
+  <!-- <div class="alert alert-info">
+    {{lastRender()}} movie-row {{ title() }} component
+  </div>
+  -->
+
+  <div class="row-slider">
+    <div class="slider-container" #scrollContainer (scroll)="onScroll()">
+      <div class="posters-wrapper">
+        @for (item of content$ | async; track item.id) {
+          <app-content-card [item]="item" [isLarge]="isLarge()"></app-content-card>
+        }
+      </div>
+    </div>
+  </div>
+</div>

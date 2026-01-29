@@ -1,1 +1,1 @@
-export type FetchType = 'trending' | 'topRated' | 'genre';
+export type FetchType = 'trending' | 'topRated' | 'popular' | 'genre';

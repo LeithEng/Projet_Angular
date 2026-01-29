@@ -1,14 +1,16 @@
 <app-navbar></app-navbar>
 <div class="app-container">
-  <app-hero-banner [item]="bannerMovie"></app-hero-banner>
-
-  <app-movie-row title="NETFLIX ORIGINALS" [fetchType]="fetchTypes.GENRE" genreId="213"
-    [isLarge]="true"></app-movie-row>
-  <app-movie-row title="Trending Now" [fetchType]="fetchTypes.TRENDING"></app-movie-row>
-  <app-movie-row title="Top Rated" [fetchType]="fetchTypes.TOP_RATED"></app-movie-row>
-  <app-movie-row title="Action Thrillers" [fetchType]="fetchTypes.GENRE" genreId="28"></app-movie-row>
-  <app-movie-row title="Comedy Movies" [fetchType]="fetchTypes.GENRE" genreId="35"></app-movie-row>
-  <app-movie-row title="Horror Movies" [fetchType]="fetchTypes.GENRE" genreId="27"></app-movie-row>
-  <app-movie-row title="Romance Movies" [fetchType]="fetchTypes.GENRE" genreId="10749"></app-movie-row>
-  <app-movie-row title="Documentaries" [fetchType]="fetchTypes.GENRE" genreId="99"></app-movie-row>
+  <app-hero-banner [item]="bannerMovie()"></app-hero-banner>
+<!--
+<app-content-row title="NETFLIX ORIGINALS" [fetchType]="fetchTypes.GENRE" genreId="213"
+    [isLarge]="true"></app-content-row>
+-->
+  
+  <app-content-row title="Trending Now" [fetchType]="fetchTypes.TRENDING"></app-content-row>
+  <app-content-row title="Top Rated" [fetchType]="fetchTypes.TOP_RATED"></app-content-row>
+  <app-content-row title="Action Thrillers" [fetchType]="fetchTypes.GENRE" genreId="28"></app-content-row>
+  <app-content-row title="Comedy contents" [fetchType]="fetchTypes.GENRE" genreId="35"></app-content-row>
+  <app-content-row title="Horror contents" [fetchType]="fetchTypes.GENRE" genreId="27"></app-content-row>
+  <app-content-row title="Romance contents" [fetchType]="fetchTypes.GENRE" genreId="10749"></app-content-row>
+  <app-content-row title="Documentaries" [fetchType]="fetchTypes.GENRE" genreId="99"></app-content-row>
 </div>

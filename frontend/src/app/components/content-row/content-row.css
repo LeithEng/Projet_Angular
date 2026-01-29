@@ -1,0 +1,192 @@
+/* Movie Row Container */
+.movie-row {
+  padding: 0 40px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+/* Row Title */
+.row-title {
+  color: #e5e5e5;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-left: 4px;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+.row-title:hover {
+  color: #ffffff;
+}
+
+/* Slider Container */
+.row-slider {
+  position: relative;
+}
+
+.slider-container {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar */
+.slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Posters Wrapper */
+.posters-wrapper {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+/* Poster Item */
+.poster-item {
+  flex: 0 0 auto;
+  transition: transform 0.3s ease;
+}
+
+/* Poster Card */
+.poster-card {
+  position: relative;
+  width: 160px;
+  height: 240px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.poster-card.poster-large {
+  width: 200px;
+  height: 300px;
+}
+
+/* Poster Image */
+.poster-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Poster Overlay */
+.poster-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.7) 50%,
+    transparent 100%
+  );
+  padding: 15px 10px 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.poster-card:hover .poster-overlay {
+  opacity: 1;
+}
+
+.poster-card:hover {
+  transform: scale(1.08);
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+}
+
+.poster-card:hover .poster-image {
+  transform: scale(1.1);
+}
+
+/* Overlay Content */
+.overlay-content {
+  color: #ffffff;
+}
+
+.movie-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movie-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #FFD700;
+  font-weight: 600;
+}
+
+.year {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .movie-row {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .row-title {
+    font-size: 1.2rem;
+  }
+
+  .poster-card {
+    width: 130px;
+    height: 195px;
+  }
+
+  .poster-card.poster-large {
+    width: 160px;
+    height: 240px;
+  }
+
+  .posters-wrapper {
+    gap: 6px;
+  }
+
+  .movie-title {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .poster-card {
+    width: 110px;
+    height: 165px;
+  }
+
+  .poster-card.poster-large {
+    width: 140px;
+    height: 210px;
+  }
+}

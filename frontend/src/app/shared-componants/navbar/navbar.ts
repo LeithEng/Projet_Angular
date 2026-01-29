@@ -12,9 +12,14 @@ import { SearchBarComponent } from '../../components/search-bar/search-bar.compo
 })
 export class NavbarComponent {
   isScrolled = false;
+  isMenuOpen = false;
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }
