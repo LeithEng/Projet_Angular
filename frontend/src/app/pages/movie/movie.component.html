@@ -8,9 +8,9 @@
   
   <app-content-row title="Trending Now" [fetchType]="fetchTypes.TRENDING"></app-content-row>
   <app-content-row title="Top Rated" [fetchType]="fetchTypes.TOP_RATED"></app-content-row>
-  <app-content-row title="Action Thrillers" [fetchType]="fetchTypes.GENRE" genreId="28"></app-content-row>
-  <app-content-row title="Comedy contents" [fetchType]="fetchTypes.GENRE" genreId="35"></app-content-row>
-  <app-content-row title="Horror contents" [fetchType]="fetchTypes.GENRE" genreId="27"></app-content-row>
-  <app-content-row title="Romance contents" [fetchType]="fetchTypes.GENRE" genreId="10749"></app-content-row>
-  <app-content-row title="Documentaries" [fetchType]="fetchTypes.GENRE" genreId="99"></app-content-row>
+  <app-content-row title="Action Thrillers" [fetchType]="fetchTypes.GENRE" [genreId]="movieGenre.ACTION"></app-content-row>
+  <app-content-row title="Comedy contents" [fetchType]="fetchTypes.GENRE" [genreId]="movieGenre.COMEDY"></app-content-row>
+  <app-content-row title="Horror contents" [fetchType]="fetchTypes.GENRE" [genreId]="movieGenre.HORROR"></app-content-row>
+  <app-content-row title="Romance contents" [fetchType]="fetchTypes.GENRE" [genreId]="movieGenre.ROMANCE"></app-content-row>
+  <app-content-row title="Documentaries" [fetchType]="fetchTypes.GENRE" [genreId]="movieGenre.DOCUMENTARY"></app-content-row>
 </div>

@@ -8,6 +8,7 @@ import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
 import { map, switchMap, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TMDB_GENRES } from '../../constants/tmdb-genre.const';
 
 @Component({
   selector: 'app-home',
@@ -18,8 +19,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MovieComponent {
-  // Expose FETCH_TYPE to the template
+  
   protected readonly fetchTypes = FETCH_TYPE;
+  protected readonly movieGenre = TMDB_GENRES.MOVIE;
+
   constructor() { }
   private tmdbService: TmdbService = inject(TmdbService);
 

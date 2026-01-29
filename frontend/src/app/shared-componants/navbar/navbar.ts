@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
@@ -11,15 +11,15 @@ import { SearchBarComponent } from '../../components/search-bar/search-bar.compo
   styleUrl: './navbar.css',
 })
 export class NavbarComponent {
-  isScrolled = false;
-  isMenuOpen = false;
+  isScrolled  =signal(false);
+  isMenuOpen = signal(false);
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.isScrolled = window.scrollY > 50;
+    this.isScrolled.set(window.pageYOffset > 50);
   }
 
   toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
+    this.isMenuOpen.update(value => !value);
   }
 }

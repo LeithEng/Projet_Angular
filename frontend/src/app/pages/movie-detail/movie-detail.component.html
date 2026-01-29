@@ -109,7 +109,7 @@
         <div class="review-card">
           <div class="review-header">
             <div class="reviewer-info">
-              <img [src]="review.author_details?.avatar_path | tmdbImage:'profile'" [alt]="review.author"
+              <img [src]="review.author_details.avatar_path | tmdbImage:'profile'" [alt]="review.author"
                 class="avatar" />
               <div>
                 <span class="reviewer-name">{{ review.author }}</span>
@@ -117,7 +117,7 @@
               </div>
               <span class="review-source">TMDB</span>
             </div>
-            @if (review.author_details?.rating) {
+            @if (review.author_details.rating) {
             <div class="review-rating">★ {{ review.author_details.rating }}/10</div>
             }
           </div>

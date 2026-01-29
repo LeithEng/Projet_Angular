@@ -1,24 +1,24 @@
 <nav class="navbar navbar-expand-lg fixed-top px-4 transition-bg navbar-dark"
-  [ngClass]="(isScrolled || isMenuOpen) ? 'bg-black' : 'bg-transparent'">
+  [ngClass]="(isScrolled() || isMenuOpen()) ? 'bg-black' : 'bg-transparent'">
 
   <div class="container-fluid">
     <a class="navbar-brand fw-bold text-danger fs-3" routerLink="/" style="cursor: pointer;">
       SAHBIFLIX
     </a>
 
-    <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen"
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen()"
       aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" [class.show]="isMenuOpen">
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen()">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" routerLink="/home" routerLinkActive="active"
-            (click)="isMenuOpen = false">Home</a></li>
+            (click)="isMenuOpen.set(false)">Home</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/tv" routerLinkActive="active"
-            (click)="isMenuOpen = false">TV Shows</a></li>
+            (click)="isMenuOpen.set(false)">TV Shows</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/movie" routerLinkActive="active"
-            (click)="isMenuOpen = false">Movies</a></li>
+            (click)="isMenuOpen.set(false)">Movies</a></li>
       </ul>
 
       <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">

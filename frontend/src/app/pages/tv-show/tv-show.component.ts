@@ -8,6 +8,7 @@ import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TMDB_GENRES } from '../../constants/tmdb-genre.const';
 
 @Component({
   selector: 'app-tv-show',
@@ -16,8 +17,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './tv-show.component.html',
   styleUrl: "./tv-show.component.css"
 })
-export class TvShowComponent {;
+export class TvShowComponent {
+
   protected readonly fetchTypes = FETCH_TYPE;
+  protected readonly tvGenre = TMDB_GENRES.TV;
+
   private tmdbService: TmdbService = inject(TmdbService);
 
   bannerTvShow$ = this.tmdbService.getTrendingTVShows().pipe(
