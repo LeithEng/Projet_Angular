@@ -14,7 +14,7 @@ import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 @Component({
   selector: 'app-tv-detail',
   standalone: true,
-  imports: [CommonModule, MediaCarouselComponent, VideoGalleryComponent, YoutubePlayerComponent, TmdbImagePipe , NavbarComponent],
+  imports: [CommonModule, MediaCarouselComponent, VideoGalleryComponent, YoutubePlayerComponent, TmdbImagePipe],
   templateUrl: './tv-detail.component.html',
   styleUrl: './tv-detail.component.css'
 })

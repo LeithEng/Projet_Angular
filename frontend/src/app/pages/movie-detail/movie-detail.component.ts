@@ -12,7 +12,7 @@ import { VideoGalleryComponent } from '../../shared-componants/video-gallery/vid
 import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 import { CreateReviewComponent } from '../../components/create-review/create-review.component';
 import { TmdbImagePipe } from '../../pipe/tmdb-image.pipe';
-import { NavbarComponent } from "../../shared-componants/navbar/navbar";
+
 
 @Component({
   selector: 'app-movie-detail',
@@ -24,7 +24,7 @@ import { NavbarComponent } from "../../shared-componants/navbar/navbar";
     YoutubePlayerComponent,
     CreateReviewComponent,
     TmdbImagePipe,
-    NavbarComponent
+    
 ],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.css',
