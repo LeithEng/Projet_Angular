@@ -40,8 +40,9 @@
 
 .rating-selector {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .star-button {
@@ -186,11 +187,19 @@
     padding: 16px;
   }
 
+  .star-button {
+    font-size: 24px;
+    padding: 2px;
+  }
+
   .form-actions {
     flex-direction: column;
   }
 
   .btn {
     width: 100%;
+  }
+  .rating-selector {
+    gap: 2px;
   }
 }
