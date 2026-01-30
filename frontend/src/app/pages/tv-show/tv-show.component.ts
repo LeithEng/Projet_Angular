@@ -9,6 +9,7 @@ import { FETCH_TYPE } from '../../constants/fetch-type.const';
 import { map, timer, zip } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TMDB_GENRES } from '../../constants/tmdb-genre.const';
+import { CONTENT_TYPE } from '../../constants/content-type.const';
 
 @Component({
   selector: 'app-tv-show',
@@ -21,6 +22,7 @@ export class TvShowComponent {
 
   protected readonly fetchTypes = FETCH_TYPE;
   protected readonly tvGenre = TMDB_GENRES.TV;
+  protected readonly contentTypes = CONTENT_TYPE;
 
   private tmdbService: TmdbService = inject(TmdbService);
 

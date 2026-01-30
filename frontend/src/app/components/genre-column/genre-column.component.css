@@ -1,0 +1,33 @@
+.genre-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.column-title {
+  cursor: pointer;
+  color: white;
+  margin-bottom: 20px;
+  padding-left: 40px; 
+ 
+}
+
+.column-subtitle{
+  color: white;
+  margin-bottom: 20px;
+  padding-left: 50px;
+
+}
+
+.column-title:hover {
+  color: #760000; 
+
+}
+
+
+
+.genres-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

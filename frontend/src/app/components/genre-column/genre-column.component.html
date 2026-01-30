@@ -1,0 +1,10 @@
+<div class="genre-column">
+    <h2 class="column-title" (click)="onclick()">{{ title() }}</h2>
+    <h3 class="column-subtitle" >Available genres : </h3>
+
+    <div class="genres-list">
+        @for (genre of genres(); track genre.id) {
+        <app-genre-cell [genre]="genre"></app-genre-cell>
+        }
+    </div>
+</div>
