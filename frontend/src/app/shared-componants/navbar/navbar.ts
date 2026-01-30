@@ -1,7 +1,8 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, signal, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +12,9 @@ import { SearchBarComponent } from '../../components/search-bar/search-bar.compo
   styleUrl: './navbar.css',
 })
 export class NavbarComponent {
-  isScrolled  =signal(false);
+  private authService = inject(AuthService);
+
+  isScrolled = signal(false);
   isMenuOpen = signal(false);
 
   @HostListener('window:scroll', [])
@@ -20,6 +23,10 @@ export class NavbarComponent {
   }
 
   toggleMenu() {
-    this.isMenuOpen.update(value => !value);
+    this.isMenuOpen.update((value) => !value);
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 }

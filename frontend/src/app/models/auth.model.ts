@@ -2,6 +2,9 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  profilePicture?: string;
+  favoriteMovies?: number[];
+  favoriteTvShows?: number[];
 }
 
 export interface AuthResponse {
@@ -25,4 +28,19 @@ export interface ApiErrorResponse {
   message: string | string[];
   timestamp: string;
   path: string;
+}
+
+export interface UpdateProfileRequest {
+  username?: string;
+  profilePicture?: string;
+}
+
+export interface UpdatePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface FavoritesResponse {
+  movies: number[];
+  tvShows: number[];
 }

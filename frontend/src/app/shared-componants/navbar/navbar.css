@@ -17,6 +17,30 @@
   width: 100px;
   height: 35px;
 }
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  color: #dc2626;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-logout:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: #dc2626;
+}
+
+.btn-logout svg {
+  width: 20px;
+  height: 20px;
+}
+
 /* mobile */ 
 
 @media (max-width: 400px) {
