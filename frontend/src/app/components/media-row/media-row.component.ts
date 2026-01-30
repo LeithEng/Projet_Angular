@@ -1,6 +1,5 @@
 import { Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MediaCardComponent } from '../media-card/media-card.component';
 import { Movie, TVShow } from '../../models/tmdb.model';
 import { ContentCardComponent } from '../content-card/content-card';
 import { SelectService } from '../../services/select-service';
