@@ -12,11 +12,12 @@ import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TmdbService } from '../../services/tmdb.service';
-import { Movie } from '../../models/tmdb.model';
+import { Movie, TVShow } from '../../models/tmdb.model';
 import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
+
 
 @Component({
   selector: 'app-search-bar',
@@ -33,7 +34,7 @@ export class SearchBarComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   searchControl = new FormControl('');
-  searchResults = signal<Movie[]>([]);
+  searchResults = signal<any[]>([]);
   isSearching = signal(false);
   showDropdown = signal(false);
   isExpanded = signal(false);
@@ -50,13 +51,16 @@ export class SearchBarComponent implements OnInit {
             this.resetSearchState();
             return of({ results: [] });
           }
-          return this.tmdbService.searchMovies(term, 1);
+          return this.tmdbService.searchMulti(term, 1);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (response) => {
-          this.searchResults.set(response.results.slice(0, 8));
+          const filtered = response.results.filter((item: any) => 
+            this.isMovie(item) || this.isTVShow(item)
+          );
+          this.searchResults.set(filtered.slice(0, 8));
           this.showDropdown.set(this.searchResults().length > 0);
           this.isSearching.set(false);
         },
@@ -65,6 +69,14 @@ export class SearchBarComponent implements OnInit {
           this.isSearching.set(false);
         },
       });
+  }
+
+  private isMovie(item: any): boolean {
+    return !!item.title;
+  }
+
+  private isTVShow(item: any): boolean {
+    return !!item.name && item.first_air_date !== undefined;
   }
 
   private resetSearchState(): void {
@@ -82,8 +94,12 @@ export class SearchBarComponent implements OnInit {
     }
   }
 
-  selectMovie(movie: Movie): void {
-    this.router.navigate(['/movie', movie.id]);
+  selectMedia(media: any): void {
+    if (this.isTVShow(media)) {
+      this.router.navigate(['/tv', media.id]);
+    } else {
+      this.router.navigate(['/movie', media.id]);
+    }
     this.clearSearch();
   }
 

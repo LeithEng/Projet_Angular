@@ -86,6 +86,14 @@ export class TmdbService {
       .pipe(catchError(this.handleError));
   }
 
+  searchMulti(query: string, page: number = 1): Observable<TMDBResponse<any>> {
+    return this.http
+      .get<TMDBResponse<any>>(`${this.BASE_URL}/search/multi`, {
+        params: this.getParams({ query, page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   getTrendingTVShows(timeWindow: 'day' | 'week' = 'week'): Observable<TMDBResponse<TVShow>> {
     return this.http
       .get<TMDBResponse<TVShow>>(`${this.BASE_URL}/trending/tv/${timeWindow}`, {
