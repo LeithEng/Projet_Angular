@@ -3,24 +3,21 @@
   flex-direction: row;
   min-height: 100vh;
   box-sizing: border-box;
-  padding-top: 80px; /* Adjust based on navbar height */
-  /* Remove old styles */
+  padding-top: 80px;
   background: #141414;
 }
-/*linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)*/
 
 .column {
   flex: 1;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px 0;
-  min-width: 0; /* Prevents flex items from overflowing horizontal containers */
+  min-width: 0;
 }
 
 .column:last-child {
   border-right: none;
 }
 
-/* Mobile: Stack columns */
 @media (max-width: 768px) {
   .home-container {
     flex-direction: column;
