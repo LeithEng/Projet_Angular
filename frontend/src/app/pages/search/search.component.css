@@ -6,9 +6,7 @@
 
 /* Hero Search Section */
 .search-hero {
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, #141414 100%),
-    url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1920');
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0c29 100%);
   background-size: cover;
   background-position: center;
   padding: 80px 0 100px;
@@ -78,6 +76,7 @@
   max-width: 700px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50px;
@@ -223,11 +222,6 @@
 
 .sort-dropdown select:hover {
   background: rgba(255, 255, 255, 0.15);
-}
-
-.sort-dropdown select option {
-  background: #1a1a1a;
-  color: #fff;
 }
 
 .sort-dropdown select option {
@@ -446,6 +440,7 @@
   top: 0.75rem;
   right: 0.75rem;
   background: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   color: #fff;
   padding: 0.35rem 0.75rem;

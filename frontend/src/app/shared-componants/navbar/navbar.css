@@ -1,6 +1,10 @@
 .nav-link {
-  color: #b3b3b3 !important; /* Light gray for inactive */
+  color: #b3b3b3 !important;
   transition: color 0.3s ease;
+}
+
+.navbar-brand {
+  cursor: pointer;
 }
 
 .nav-link:hover {

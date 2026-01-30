@@ -26,6 +26,8 @@
             placeholder="Search for movies, TV shows..."
             class="search-input-main"
             autocomplete="off"
+            aria-label="Search for movies and TV shows"
+            role="searchbox"
           />
           <button *ngIf="searchControl.value" class="clear-btn-main" (click)="clearSearch()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -49,6 +51,8 @@
             class="filter-tab"
             [class.active]="activeFilter() === 'all'"
             (click)="setFilter('all')"
+            [attr.aria-pressed]="activeFilter() === 'all'"
+            aria-label="Show all results"
           >
             All
             <span class="count">{{ totalCount }}</span>
@@ -57,19 +61,32 @@
             class="filter-tab"
             [class.active]="activeFilter() === MOVIE"
             (click)="setFilter(MOVIE)"
+            [attr.aria-pressed]="activeFilter() === MOVIE"
+            aria-label="Show only movies"
           >
             Movies
             <span class="count">{{ movieCount }}</span>
           </button>
-          <button class="filter-tab" [class.active]="activeFilter() === TV" (click)="setFilter(TV)">
+          <button
+            class="filter-tab"
+            [class.active]="activeFilter() === TV"
+            (click)="setFilter(TV)"
+            [attr.aria-pressed]="activeFilter() === TV"
+            aria-label="Show only TV shows"
+          >
             TV Shows
             <span class="count">{{ tvCount }}</span>
           </button>
         </div>
 
         <div class="right-controls">
-          <button class="filters-toggle" (click)="toggleFilters()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <button
+            class="filters-toggle"
+            (click)="toggleFilters()"
+            [attr.aria-expanded]="showFilters()"
+            aria-label="Toggle genre filters"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
             </svg>
             Genres
@@ -84,6 +101,7 @@
               id="sort"
               [value]="activeSortOption()"
               (change)="setSortOption($any($event.target).value)"
+              aria-label="Sort results"
             >
               <option value="popularity">Popularity</option>
               <option value="rating">Rating</option>
@@ -112,6 +130,8 @@
             class="genre-filter-btn"
             [class.active]="selectedGenres().includes(genre.id)"
             (click)="toggleGenre(genre.id)"
+            [attr.aria-pressed]="selectedGenres().includes(genre.id)"
+            [attr.aria-label]="'Filter by ' + genre.name"
           >
             {{ genre.name }}
           </button>
