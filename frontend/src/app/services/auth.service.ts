@@ -104,6 +104,11 @@ export class AuthService {
     return this.http.put<void>(`${this.USERS_URL}/password`, data);
   }
 
+  verifyUserName(username: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(`${this.API_URL}/usernames-available/${username}`);
+  }
+  
+  
   toggleFavorite(
     contentId: number,
     contentType: 'movie' | 'tv',

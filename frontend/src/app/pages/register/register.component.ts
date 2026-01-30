@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, NG_ASYNC_VALIDATORS } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { StateService } from '../../services/state.service';
+import { userNameValidator } from '../../validators/user-name.validator';
 
 @Component({
   selector: 'app-register',
@@ -28,12 +29,16 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       username: [
         '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(20),
-          Validators.pattern(/^[a-zA-Z0-9_-]+$/),
-        ],
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(3),
+            Validators.maxLength(20),
+            Validators.pattern(/^[a-zA-Z0-9_-]+$/),
+          ],
+          asyncValidators: [userNameValidator(this.authService)],
+          //updateOn: 'blur',
+        }
       ],
       password: [
         '',
