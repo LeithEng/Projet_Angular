@@ -7,6 +7,7 @@ import { TmdbService } from '../../services/tmdb.service';
 import { User } from '../../models/auth.model';
 import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 import { passwordMatchValidator } from '../../validators/password-match.validator';
+import { userNameValidator } from '../../validators/user-name.validator';
 
 @Component({
   selector: 'app-profile',
@@ -29,6 +30,7 @@ export class ProfileComponent implements OnInit {
   loadingFavorites = signal(false);
   profileForm: FormGroup;
   passwordForm: FormGroup;
+  private originalUsername = '';
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -58,10 +60,15 @@ export class ProfileComponent implements OnInit {
     this.authService.getProfile().subscribe({
       next: (userData) => {
         this.user.set(userData);
+        this.originalUsername = userData.username;
         this.profileForm.patchValue({
           username: userData.username,
           profilePicture: userData.profilePicture || '',
         });
+        // Set async validator only after we have the original username
+        this.profileForm
+          .get('username')
+          ?.setAsyncValidators([userNameValidator(this.authService, this.originalUsername)]);
         this.loading.set(false);
       },
       error: (err) => {

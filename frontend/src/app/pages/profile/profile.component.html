@@ -151,6 +151,9 @@
                   @if (username?.errors?.['maxlength']) {
                     <span>Username must not exceed 20 characters</span>
                   }
+                  @if (username?.errors?.['userNameTaken']) {
+                    <span>Username is already taken</span>
+                  }
                 </div>
               }
             </div>
