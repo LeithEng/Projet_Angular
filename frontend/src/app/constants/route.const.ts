@@ -7,5 +7,6 @@ export const ROUTES = {
     GENRE: 'genre',
     PROFILE: 'profile',
     FAVORITES: 'favorites',
+    SEARCH : 'search',
     NOT_FOUND: '**',
 };

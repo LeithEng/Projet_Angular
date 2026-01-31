@@ -1,22 +1,19 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, input, viewChild } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef,inject, input, OnInit, viewChild } from '@angular/core';
+import { takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, combineLatest, concat, of } from 'rxjs';
-import { catchError, map, scan, shareReplay, startWith, switchMap, tap, withLatestFrom, filter, exhaustMap, concatMap, takeWhile } from 'rxjs/operators';
+import { BehaviorSubject,from,fromEvent,of } from 'rxjs';
+import {map, scan, shareReplay,tap,concatMap, takeWhile, throttleTime } from 'rxjs/operators';
 import { TmdbService } from '../../services/tmdb.service';
 import { Movie, TMDBResponse, TVShow } from '../../models/tmdb.model';
-import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
-import { ItemTitlePipe } from '../../pipe/item-title.pipe';
-import { ItemDatePipe } from '../../pipe/item-date.pipe';
 import { FetchType } from '../../types/fetch-type.type';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
 import { ContentType } from '../../types/content-type.type';
 import { CONTENT_TYPE } from '../../constants/content-type.const';
 import { executeFetchStrategy } from '../../strategies/tmdb-fetch.strategy';
-import { RowViewModel } from '../../interfaces/row-view-model.interface';
 import { ContentCardComponent } from '../content-card/content-card';
 import { SelectService } from '../../services/select-service';
+import { ROUTES } from '../../constants/route.const';
 
 
 
@@ -30,7 +27,7 @@ import { SelectService } from '../../services/select-service';
   styleUrl: "./content-row.css",
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContentRowComponent {
+export class ContentRowComponent implements OnInit {
   // for test purpose
   lastRender(): string {
     return new Date().toLocaleTimeString();
@@ -40,6 +37,7 @@ export class ContentRowComponent {
   private selectService = inject(SelectService);
   private tmdbService = inject(TmdbService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
 
   constructor() {
@@ -49,6 +47,22 @@ export class ContentRowComponent {
         this.navigateToDetail(item);
      }
     );
+  }
+
+  ngOnInit(): void {
+
+    const element = this.scrollContainer().nativeElement;
+    fromEvent(element, 'scroll')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        console.log("scroll event in content row");
+        const atRightEdge = element.scrollLeft + element.clientWidth >= element.scrollWidth - 100;
+        if (atRightEdge) {
+            this.page$.next(this.page$.getValue() + 1);
+        }
+      }
+    );
+      
   }
 
   // --- Inputs (Signals) ---
@@ -97,21 +111,13 @@ export class ContentRowComponent {
   
   readonly isLoading$ = of(false);//this.MasterStream$.pipe(map(response => vm.isLoading));
 
-  // --- Actions ---
-
-  onScroll() {
-    const element = this.scrollContainer().nativeElement;
-    const atRightEdge = element.scrollLeft + element.clientWidth >= element.scrollWidth - 100;
-
-    if (atRightEdge) {
-      this.page$.next(this.page$.getValue() + 1);
-    }
-  }
+  
 
   navigateToDetail(item: Movie | TVShow): void {
-    this.router.navigate([this.contentType() === CONTENT_TYPE.MOVIE ? '/movie' : '/tv', item.id]);
+        this.router.navigate(
+            ['/', this.contentType() === CONTENT_TYPE.MOVIE ? ROUTES.MOVIE : ROUTES.TV, item.id]
+        );
   }
-
 
 
 }

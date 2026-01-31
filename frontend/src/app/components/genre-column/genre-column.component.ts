@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GenreCellComponent } from '../genre-cell/genre-cell.component';
 import { Genre } from '../../models/tmdb.model';
@@ -12,7 +12,8 @@ import { ContentType } from '../../types/content-type.type';
   standalone: true,
   imports: [CommonModule, GenreCellComponent],
   templateUrl: './genre-column.component.html',
-  styleUrl: './genre-column.component.css'
+  styleUrl: './genre-column.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GenreColumnComponent {
     

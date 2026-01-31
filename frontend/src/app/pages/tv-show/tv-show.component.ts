@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbService } from '../../services/tmdb.service';
 import { TVShow } from '../../models/tmdb.model';
@@ -16,7 +16,8 @@ import { CONTENT_TYPE } from '../../constants/content-type.const';
   standalone: true,
   imports: [CommonModule, HeroBannerComponent, ContentRowComponent, NavbarComponent],
   templateUrl: './tv-show.component.html',
-  styleUrl: "./tv-show.component.css"
+  styleUrl: "./tv-show.component.css",
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TvShowComponent {
 

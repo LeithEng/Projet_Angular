@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbService } from '../../services/tmdb.service';
@@ -13,6 +13,8 @@ import { VideoGalleryComponent } from '../../shared-componants/video-gallery/vid
 import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 import { CreateReviewComponent } from '../../components/create-review/create-review.component';
 import { TmdbImagePipe } from '../../pipe/tmdb-image.pipe';
+import { NavbarComponent } from '../../shared-componants/navbar/navbar';
+import { ROUTES } from '../../constants/route.const';
 
 @Component({
   selector: 'app-movie-detail',
@@ -24,9 +26,11 @@ import { TmdbImagePipe } from '../../pipe/tmdb-image.pipe';
     YoutubePlayerComponent,
     CreateReviewComponent,
     TmdbImagePipe,
+    NavbarComponent
   ],
   templateUrl: './movie-detail.component.html',
   styleUrl: './movie-detail.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -138,7 +142,7 @@ export class MovieDetailComponent implements OnInit {
     this.selectedVideo.set(video);
   }
   onMovieClick(movie: Movie) {
-    this.router.navigate(['/movie', movie.id]);
+    this.router.navigate(['/',ROUTES.MOVIE, movie.id]);
   }
   onReviewCreated() {
     if (this.movieDetails()) {
@@ -150,6 +154,6 @@ export class MovieDetailComponent implements OnInit {
     }
   }
   goBack() {
-    this.router.navigate(['/movie']);
+    this.router.navigate(['/',ROUTES.MOVIE]);
   }
 }

@@ -1,15 +1,17 @@
-import { Component, inject, input, computed } from '@angular/core';
+import { Component, inject, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Movie, TVShow } from '../../models/tmdb.model';
 import { TmdbService } from '../../services/tmdb.service';
+import { ROUTES } from '../../constants/route.const';
 
 @Component({
   selector: 'app-hero-banner',
   standalone: true,
   imports: [CommonModule],
   templateUrl:"./hero-banner.html",
-  styleUrl:"./hero-banner.css"
+  styleUrl:"./hero-banner.css",
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeroBannerComponent {
   item = input<Movie | TVShow | null>(null);
@@ -38,9 +40,9 @@ export class HeroBannerComponent {
     const m = this.item();
     if (m) {
       if ('title' in m) {
-        this.router.navigate(['/movie', m.id]);
+        this.router.navigate(['/',ROUTES.MOVIE, m.id]);
       } else {
-        this.router.navigate(['/tv', m.id]);
+        this.router.navigate(['/',ROUTES.TV, m.id]);
       }
     }
   }

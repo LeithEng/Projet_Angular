@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, signal, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -8,6 +8,7 @@ import { User } from '../../models/auth.model';
 import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 import { passwordMatchValidator } from '../../validators/password-match.validator';
 import { userNameValidator } from '../../validators/user-name.validator';
+import { ROUTES } from '../../constants/route.const';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ import { userNameValidator } from '../../validators/user-name.validator';
   imports: [CommonModule, ReactiveFormsModule, RouterModule, NavbarComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
@@ -226,9 +228,9 @@ export class ProfileComponent implements OnInit {
 
   navigateToContent(item: any, type: 'movie' | 'tv'): void {
     if (type === 'movie') {
-      this.router.navigate(['/movie', item.id]);
+      this.router.navigate(['/',ROUTES.MOVIE, item.id]);
     } else {
-      this.router.navigate(['/tv', item.id]);
+      this.router.navigate(['/',ROUTES.TV, item.id]);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, signal, inject, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { of, forkJoin } from 'rxjs';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
 import { ContentType } from '../../types/content-type.type';
 import { CONTENT_TYPE } from '../../constants/content-type.const';
+import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 
 type FilterType = 'all' | ContentType;
 type SortOption = 'popularity' | 'rating' | 'date';
@@ -22,9 +23,10 @@ interface SearchItem {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PosterUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, PosterUrlPipe,NavbarComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchComponent implements OnInit {
   private tmdbService = inject(TmdbService);

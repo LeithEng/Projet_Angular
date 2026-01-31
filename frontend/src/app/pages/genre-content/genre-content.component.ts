@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TmdbService } from '../../services/tmdb.service';
@@ -17,7 +17,8 @@ import { ContentType } from '../../types/content-type.type';
   standalone: true,
   imports: [CommonModule, MediaRowComponent, NavbarComponent],
   templateUrl: './genre-content.component.html',
-  styleUrl: './genre-content.component.css'
+  styleUrl: './genre-content.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GenreContentComponent {
   

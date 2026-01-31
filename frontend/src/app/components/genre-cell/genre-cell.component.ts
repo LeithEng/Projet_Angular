@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Genre } from '../../models/tmdb.model'; 
 import { ContentType } from '../../types/content-type.type';
@@ -10,7 +10,8 @@ import { ROUTES } from '../../constants/route.const';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './genre-cell.component.html',
-  styleUrl: './genre-cell.component.css'
+  styleUrl: './genre-cell.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GenreCellComponent {
     private router = inject(Router);

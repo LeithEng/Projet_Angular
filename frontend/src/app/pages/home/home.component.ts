@@ -1,4 +1,4 @@
-import { Component, Signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -9,6 +9,7 @@ import { TmdbService } from '../../services/tmdb.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { CONTENT_TYPE } from '../../constants/content-type.const';
+import { ROUTES } from '../../constants/route.const';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ import { CONTENT_TYPE } from '../../constants/content-type.const';
   imports: [CommonModule, NavbarComponent, GenreColumnComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
   
@@ -49,6 +51,6 @@ export class HomeComponent {
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/',ROUTES.LOGIN]);
   }
 }
