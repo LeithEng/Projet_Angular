@@ -1,0 +1,32 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Error rules
+    - avoid_print
+    - avoid_returning_null_for_future
+    - cancel_subscriptions
+    - close_sinks
+    - valid_regexps
+
+    # Style rules
+    - camel_case_types
+    - constant_identifier_names
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_fields
+    - prefer_final_locals
+    - unnecessary_this
+    - use_key_in_widget_constructors
+
+    # Pub rules
+    - package_names
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  
+  errors:
+    missing_required_param: error
+    missing_return: error

@@ -22,7 +22,11 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+    origin: [
+      'http://localhost:4200',
+      'http://localhost:3000',
+      /^http:\/\/localhost:\d+$/, // Allow any localhost port for Flutter web
+    ],
     credentials: true,
   });
 
