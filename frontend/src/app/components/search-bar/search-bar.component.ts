@@ -7,6 +7,7 @@ import {
   HostListener,
   DestroyRef,
   inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +18,7 @@ import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
+import { ROUTES } from '../../constants/route.const';
 
 
 @Component({
@@ -25,6 +27,7 @@ import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
   imports: [CommonModule, ReactiveFormsModule, PosterUrlPipe],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchBarComponent implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -96,9 +99,9 @@ export class SearchBarComponent implements OnInit {
 
   selectMedia(media: any): void {
     if (this.isTVShow(media)) {
-      this.router.navigate(['/tv', media.id]);
+      this.router.navigate(['/',ROUTES.TV, media.id]);
     } else {
-      this.router.navigate(['/movie', media.id]);
+      this.router.navigate(['/',ROUTES.MOVIE, media.id]);
     }
     this.clearSearch();
   }
@@ -106,7 +109,7 @@ export class SearchBarComponent implements OnInit {
   viewAllResults(): void {
     const query = this.searchControl.value?.trim();
     if (query) {
-      this.router.navigate(['/search'], { queryParams: { q: query } });
+      this.router.navigate(['/',ROUTES.SEARCH], { queryParams: { q: query } });
       this.clearSearch();
     }
   }
@@ -115,7 +118,7 @@ export class SearchBarComponent implements OnInit {
     event.preventDefault();
     const query = this.searchControl.value?.trim();
     if (query && query.length >= 2) {
-      this.router.navigate(['/search'], { queryParams: { q: query } });
+      this.router.navigate(['/',ROUTES.SEARCH], { queryParams: { q: query } });
       this.clearSearch();
     }
   }

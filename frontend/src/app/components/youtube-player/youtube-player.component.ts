@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, effect } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -8,6 +8,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   imports: [CommonModule],
   templateUrl: './youtube-player.component.html',
   styleUrl: './youtube-player.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class YoutubePlayerComponent {
   @Input() videoKey: string | null = null;

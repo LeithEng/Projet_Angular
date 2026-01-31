@@ -49,7 +49,7 @@
 
 .back-button {
   position: fixed;
-  top: 20px;
+  top: 80px;
   left: 20px;
   background-color: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.2);

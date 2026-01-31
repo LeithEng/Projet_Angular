@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbService } from '../../services/tmdb.service';
@@ -10,6 +10,7 @@ import { VideoGalleryComponent } from '../../shared-componants/video-gallery/vid
 import { YoutubePlayerComponent } from '../../components/youtube-player/youtube-player.component';
 import { TmdbImagePipe } from '../../pipe/tmdb-image.pipe';
 import { NavbarComponent } from '../../shared-componants/navbar/navbar';
+import { ROUTES } from '../../constants/route.const';
 
 @Component({
   selector: 'app-tv-detail',
@@ -20,9 +21,11 @@ import { NavbarComponent } from '../../shared-componants/navbar/navbar';
     VideoGalleryComponent,
     YoutubePlayerComponent,
     TmdbImagePipe,
+    NavbarComponent
   ],
   templateUrl: './tv-detail.component.html',
   styleUrl: './tv-detail.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TvDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -87,9 +90,9 @@ export class TvDetailComponent implements OnInit {
   }
 
   onShowClick(show: TVShow) {
-    this.router.navigate(['/tv', show.id]);
+    this.router.navigate(['/',ROUTES.TV, show.id]);
   }
   goBack() {
-    this.router.navigate(['/tv']);
+    this.router.navigate(['/',ROUTES.TV]);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { Movie, TVShow } from '../../models/tmdb.model';
 import { SelectService } from '../../services/select-service';
 import { ItemTitlePipe } from '../../pipe/item-title.pipe';
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule ,PosterUrlPipe, ItemTitlePipe, ItemDatePipe],
   templateUrl: './content-card.html',
   styleUrl: './content-card.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContentCardComponent {
 

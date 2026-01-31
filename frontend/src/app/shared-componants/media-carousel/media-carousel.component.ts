@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbImagePipe } from  '../../pipe/tmdb-image.pipe';
 
@@ -7,7 +7,8 @@ import { TmdbImagePipe } from  '../../pipe/tmdb-image.pipe';
   standalone: true,
   imports: [CommonModule, TmdbImagePipe],
   templateUrl: './media-carousel.component.html',
-  styleUrls: ['./media-carousel.component.css']
+  styleUrls: ['./media-carousel.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MediaCarouselComponent {
   @Input({ required: true }) title: string = '';
