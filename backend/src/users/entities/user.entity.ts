@@ -23,6 +23,15 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  profilePicture?: string;
+
+  @Column('simple-json', { nullable: true })
+  favoriteMovies?: number[];
+
+  @Column('simple-json', { nullable: true })
+  favoriteTvShows?: number[];
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 export interface ReviewAuthorDetails {
   name: string;
   username: string;
-  avatar_path?: string | null;
+  profile_image?: string | null;
   rating?: number | null;
 }
 

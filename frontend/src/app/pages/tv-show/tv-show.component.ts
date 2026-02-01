@@ -1,31 +1,40 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbService } from '../../services/tmdb.service';
 import { TVShow } from '../../models/tmdb.model';
 import { HeroBannerComponent } from "../../components/hero-banner/hero-banner";
-import { MovieRowComponent } from '../../components/movie-row/movie-row';
+import { ContentRowComponent } from '../../components/content-row/content-row';
 import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 import { FETCH_TYPE } from '../../constants/fetch-type.const';
+import { map, timer, zip } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TMDB_GENRES } from '../../constants/tmdb-genre.const';
+import { CONTENT_TYPE } from '../../constants/content-type.const';
 
 @Component({
   selector: 'app-tv-show',
   standalone: true,
-  imports: [CommonModule, HeroBannerComponent, MovieRowComponent, NavbarComponent],
+  imports: [CommonModule, HeroBannerComponent, ContentRowComponent, NavbarComponent],
   templateUrl: './tv-show.component.html',
-  styleUrl: "./tv-show.component.css"
+  styleUrl: "./tv-show.component.css",
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TvShowComponent implements OnInit {
-  bannerTvShow = signal<TVShow | null>(null);
+export class TvShowComponent {
+
   protected readonly fetchTypes = FETCH_TYPE;
+  protected readonly tvGenre = TMDB_GENRES.TV;
+  protected readonly contentTypes = CONTENT_TYPE;
 
   private tmdbService: TmdbService = inject(TmdbService);
 
-  ngOnInit() {
-    this.tmdbService.getTrendingTVShows().subscribe(response => {
-      if (response.results && response.results.length > 0) {
-        const randomIndex = Math.floor(Math.random() * response.results.length);
-        this.bannerTvShow.set(response.results[randomIndex]);
-      }
-    });
-  }
+  bannerTvShow$ = zip(
+      this.tmdbService.getTrendingTVShows(),
+      timer(1000))
+    .pipe(
+    map(([response,_]) => response.results), 
+    map(tvShows => tvShows[Math.floor(Math.random() * tvShows.length)])
+  );
+
+  bannerTvShow = toSignal(this.bannerTvShow$, { initialValue: null });
+
 }

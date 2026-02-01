@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnInit, OnChanges, SimpleChanges, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -13,6 +13,7 @@ import { debounceTime } from 'rxjs/operators';
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './create-review.component.html',
   styleUrl: './create-review.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateReviewComponent implements OnInit 
 {
@@ -89,7 +90,7 @@ export class CreateReviewComponent implements OnInit
       author_details: {
         name: this .currentUser.username,
         username: this.currentUser.username,
-        avatar_path: null,
+        profile_image: this.currentUser.profilePicture,
         rating: this.rating(),
       },
       content: this.content(),

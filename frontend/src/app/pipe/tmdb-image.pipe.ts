@@ -17,6 +17,10 @@ export class TmdbImagePipe implements PipeTransform {
       return '/assets/no-avatar.png'; 
     }
 
+    if (path.startsWith('data:image') || path.startsWith('http')) {
+      return path;
+    }
+
     switch (type) {
       case 'backdrop':
         return this.tmdb.getBackdropUrl(path);

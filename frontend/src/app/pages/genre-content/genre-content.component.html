@@ -1,0 +1,36 @@
+<app-navbar></app-navbar>
+
+<div class="genre-content-container fade-in">
+    <div class="header">
+        <h1>{{ title() }}</h1>
+    </div>
+
+
+    @if( !loaded() ) {
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading content...</div>
+    </div>
+    }
+    @else{
+
+    @if (items() ) {
+    <app-media-row [items]="items()" [contentType]="type || ''"></app-media-row>
+    }
+
+    @if( items().length === 0 ) {
+    <div class="no-content-message">
+        <p>No content available for this genre.</p>
+    </div>
+    }
+
+
+    @if (hasMore$ | async) {
+    <div class="load-more-container">
+        <button class="load-more-btn" (click)="loadMore()">Load More Content</button>
+    </div>
+    }
+    }
+
+
+</div>

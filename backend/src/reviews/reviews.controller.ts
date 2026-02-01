@@ -24,7 +24,7 @@ export class ReviewsController {
   async findByMovieId(
     @Param('movieId') movieId: string,
   ): Promise<ReviewResponseDto[]> {
-    return this.reviewsService.findByMovieId(movieId);
+    return (await this.reviewsService.findByMovieId(movieId)).reverse();
   }
 
   @Get()

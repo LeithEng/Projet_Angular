@@ -3,13 +3,22 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { User, AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.model';
+import {
+  User,
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  UpdateProfileRequest,
+  UpdatePasswordRequest,
+  FavoritesResponse,
+} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly API_URL = `${environment.apiUrl}/auth`;
+  private readonly USERS_URL = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'access_token';
   private readonly USER_KEY = 'current_user';
 
@@ -17,7 +26,10 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
   currentUserSignal = signal<User | null>(this.getUserFromStorage());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   private getUserFromStorage(): User | null {
     const userStr = localStorage.getItem(this.USER_KEY);
@@ -44,7 +56,7 @@ export class AuthService {
       catchError((error) => {
         console.error('Registration error:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -56,7 +68,7 @@ export class AuthService {
       catchError((error) => {
         console.error('Login error:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -68,8 +80,54 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  getProfile(): Observable<any> {
-    return this.http.get(`${this.API_URL}/me`);
+  getProfile(): Observable<User> {
+    return this.http.get<User>(`${this.USERS_URL}/profile`).pipe(
+      tap((user) => {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        this.currentUserSubject.next(user);
+        this.currentUserSignal.set(user);
+      }),
+    );
+  }
+
+  updateProfile(data: UpdateProfileRequest): Observable<User> {
+    return this.http.put<User>(`${this.USERS_URL}/profile`, data).pipe(
+      tap((user) => {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        this.currentUserSubject.next(user);
+        this.currentUserSignal.set(user);
+      }),
+    );
+  }
+
+  updatePassword(data: UpdatePasswordRequest): Observable<void> {
+    return this.http.put<void>(`${this.USERS_URL}/password`, data);
+  }
+
+  verifyUserName(username: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(`${this.API_URL}/usernames-available/${username}`);
+  }
+  
+  
+  toggleFavorite(
+    contentId: number,
+    contentType: 'movie' | 'tv',
+  ): Observable<{ isFavorite: boolean }> {
+    return this.http
+      .post<{ isFavorite: boolean }>(`${this.USERS_URL}/favorites/toggle`, {
+        contentId,
+        contentType,
+      })
+      .pipe(
+        tap(() => {
+          // Refresh user profile to update favorites
+          this.getProfile().subscribe();
+        }),
+      );
+  }
+
+  getFavorites(): Observable<FavoritesResponse> {
+    return this.http.get<FavoritesResponse>(`${this.USERS_URL}/favorites`);
   }
 
   verifyToken(): Observable<any> {

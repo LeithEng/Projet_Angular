@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   Movie,
@@ -81,6 +81,14 @@ export class TmdbService {
   searchMovies(query: string, page: number = 1): Observable<TMDBResponse<Movie>> {
     return this.http
       .get<TMDBResponse<Movie>>(`${this.BASE_URL}/search/movie`, {
+        params: this.getParams({ query, page: page.toString() }),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  searchMulti(query: string, page: number = 1): Observable<TMDBResponse<any>> {
+    return this.http
+      .get<TMDBResponse<any>>(`${this.BASE_URL}/search/multi`, {
         params: this.getParams({ query, page: page.toString() }),
       })
       .pipe(catchError(this.handleError));
@@ -168,18 +176,42 @@ export class TmdbService {
 
   getMovieReviews(movieId: number, page: number = 1): Observable<ReviewsResponse> {
     return this.http
-      .get<ReviewsResponse>(`${this.BASE_URL}/movie/${movieId}/reviews`, {
+      .get<any>(`${this.BASE_URL}/movie/${movieId}/reviews`, {
         params: this.getParams({ page: page.toString() }),
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((response) => ({
+          ...response,
+          results: response.results.map((review: any) => ({
+            ...review,
+            author_details: {
+              ...review.author_details,
+              profile_image: review.author_details.avatar_path,
+            },
+          })),
+        })),
+        catchError(this.handleError),
+      );
   }
 
   getTVShowReviews(tvId: number, page: number = 1): Observable<ReviewsResponse> {
     return this.http
-      .get<ReviewsResponse>(`${this.BASE_URL}/tv/${tvId}/reviews`, {
+      .get<any>(`${this.BASE_URL}/tv/${tvId}/reviews`, {
         params: this.getParams({ page: page.toString() }),
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((response) => ({
+          ...response,
+          results: response.results.map((review: any) => ({
+            ...review,
+            author_details: {
+              ...review.author_details,
+              profile_image: review.author_details.avatar_path,
+            },
+          })),
+        })),
+        catchError(this.handleError),
+      );
   }
 
   getSimilarMovies(movieId: number, page: number = 1): Observable<TMDBResponse<Movie>> {

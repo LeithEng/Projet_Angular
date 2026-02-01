@@ -3,7 +3,7 @@ import { Review } from '../entities/review.entity';
 interface ReviewAuthorDetailsResponse {
   name: string;
   username: string;
-  avatar_path: string | null;
+  profile_image: string | null;
   rating: number | null;
 }
 
@@ -23,7 +23,7 @@ export class ReviewResponseDto {
       author_details: {
         name: review.authorDetails.name,
         username: review.authorDetails.username,
-        avatar_path: review.authorDetails.avatarPath,
+        profile_image: review.authorDetails.profileImage,
         rating: review.authorDetails.rating,
       },
       content: review.content,

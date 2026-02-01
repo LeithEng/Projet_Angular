@@ -44,7 +44,7 @@ describe('CreateReviewComponent', () => {
       author_details: {
         name: 'Test User',
         username: 'testuser',
-        avatar_path: null,
+        profile_image: null,
         rating: 8,
       },
       content: 'Great movie!',

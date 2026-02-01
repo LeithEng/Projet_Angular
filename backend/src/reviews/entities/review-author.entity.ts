@@ -14,12 +14,11 @@ export class ReviewAuthor {
   username: string;
 
   @Column({
-    name: 'avatar_path',
-    type: 'varchar',
-    length: 255,
+    name: 'profile_image',
+    type: 'text',
     nullable: true,
   })
-  avatarPath: string | null;
+  profileImage: string | null;
 
   @Column({ type: 'float', nullable: true })
   rating: number | null;

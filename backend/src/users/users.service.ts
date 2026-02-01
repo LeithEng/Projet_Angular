@@ -2,16 +2,23 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { ReviewsService } from '../reviews/reviews.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @Inject(forwardRef(() => ReviewsService))
+    private reviewsService: ReviewsService,
   ) {}
 
   async create(userData: {
@@ -74,5 +81,130 @@ export class UsersService {
     if (result.affected === 0) {
       throw new NotFoundException('User not found');
     }
+  }
+
+  async updateProfile(
+    id: string,
+    updateData: { username?: string; profilePicture?: string },
+  ): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateData.username && updateData.username !== user.username) {
+      const existingUser = await this.findByUsername(updateData.username);
+      if (existingUser) {
+        throw new ConflictException('Username already exists');
+      }
+    }
+
+    const oldUsername = user.username;
+
+    // Update fields
+    if (updateData.username) user.username = updateData.username;
+    if (updateData.profilePicture !== undefined)
+      user.profilePicture = updateData.profilePicture;
+
+    const updatedUser = await this.usersRepository.save(user);
+
+    // Sync with reviews
+    await this.reviewsService.updateAuthorProfile(
+      oldUsername,
+      updatedUser.username,
+      updatedUser.profilePicture || null,
+    );
+
+    return updatedUser;
+  }
+
+  async updatePassword(
+    id: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await this.usersRepository.save(user);
+  }
+
+  async toggleFavorite(
+    userId: string,
+    contentId: number,
+    contentType: 'movie' | 'tv',
+  ): Promise<{ isFavorite: boolean }> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const favoriteField =
+      contentType === 'movie' ? 'favoriteMovies' : 'favoriteTvShows';
+    const currentFavorites = user[favoriteField] || [];
+
+    let updatedFavorites: number[];
+    const index = currentFavorites.indexOf(contentId);
+    const isFavorite = index === -1;
+
+    if (isFavorite) {
+      updatedFavorites = [...currentFavorites, contentId];
+    } else {
+      updatedFavorites = currentFavorites.filter((id) => id !== contentId);
+    }
+
+    user[favoriteField] = updatedFavorites;
+    await this.usersRepository.save(user);
+
+    return { isFavorite };
+  }
+
+  async getFavorites(
+    userId: string,
+  ): Promise<{ movies: number[]; tvShows: number[] }> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      movies: user.favoriteMovies || [],
+      tvShows: user.favoriteTvShows || [],
+    };
+  }
+
+  async isFavorite(
+    userId: string,
+    contentId: number,
+    contentType: 'movie' | 'tv',
+  ): Promise<boolean> {
+    const user = await this.findById(userId);
+    if (!user) {
+      return false;
+    }
+
+    const favoriteField =
+      contentType === 'movie' ? 'favoriteMovies' : 'favoriteTvShows';
+    const favorites = user[favoriteField] || [];
+    return favorites.includes(contentId);
   }
 }

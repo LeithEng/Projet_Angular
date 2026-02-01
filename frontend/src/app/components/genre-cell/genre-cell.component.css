@@ -1,0 +1,20 @@
+.genre-cell {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e5e5e5;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+  text-decoration: none;
+}
+
+.genre-cell:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  color: white;
+  border-color: white;
+}

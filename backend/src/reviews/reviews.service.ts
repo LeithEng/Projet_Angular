@@ -53,6 +53,23 @@ export class ReviewsService {
     await this.reviewRepository.remove(review);
   }
 
+  async updateAuthorProfile(
+    oldUsername: string,
+    newUsername: string,
+    profileImage: string | null,
+  ): Promise<void> {
+    const author = await this.authorRepository.findOne({
+      where: { username: oldUsername },
+    });
+
+    if (author) {
+      author.username = newUsername;
+      author.name = newUsername;
+      author.profileImage = profileImage;
+      await this.authorRepository.save(author);
+    }
+  }
+
   private async resolveAuthor(details: CreateReviewDto['author_details']): Promise<ReviewAuthor> {
     const mappedDetails = this.mapAuthorDetails(details);
     const existingAuthor = await this.authorRepository.findOne({
@@ -74,7 +91,7 @@ export class ReviewsService {
     return {
       name: details.name,
       username: details.username,
-      avatarPath: details.avatar_path ?? null,
+      profileImage: details.profile_image ?? null,
       rating:
         details.rating === undefined || details.rating === null
           ? null

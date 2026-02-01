@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, signal, inject, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { of, forkJoin } from 'rxjs';
 import { PosterUrlPipe } from '../../pipe/poster-url-pipe';
 import { ContentType } from '../../types/content-type.type';
 import { CONTENT_TYPE } from '../../constants/content-type.const';
+import { NavbarComponent } from '../../shared-componants/navbar/navbar';
 
 type FilterType = 'all' | ContentType;
 type SortOption = 'popularity' | 'rating' | 'date';
@@ -22,9 +23,10 @@ interface SearchItem {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PosterUrlPipe],
+  imports: [CommonModule, ReactiveFormsModule, PosterUrlPipe,NavbarComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchComponent implements OnInit {
   private tmdbService = inject(TmdbService);
@@ -183,10 +185,7 @@ export class SearchComponent implements OnInit {
         },
 
         // 5️⃣ Error handling
-        error: (err) => {
-          console.error('Search error:', err);
-
-          // Always stop loading spinner on error
+        error: () => {
           this.isLoading.set(false);
         },
       });
@@ -209,7 +208,6 @@ export class SearchComponent implements OnInit {
         });
         this.allGenres.set(Array.from(allGenresMap.values()));
       },
-      error: (err) => console.error('Error loading genres:', err),
     });
   }
 
@@ -264,8 +262,7 @@ export class SearchComponent implements OnInit {
         this.currentPage.set(1);
         this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Search error:', err);
+      error: () => {
         this.isLoading.set(false);
       },
     });
@@ -291,18 +288,18 @@ export class SearchComponent implements OnInit {
 
     // Filter by genres
     if (this.selectedGenres().length > 0) {
+      const selectedSet = new Set(this.selectedGenres());
       results = results.filter((searchItem) => {
         const genreIds = searchItem.item.genre_ids;
         if (!genreIds || genreIds.length === 0) return false;
-        // Check if item has at least one of the selected genres
-        return this.selectedGenres().some((genreId) => genreIds.includes(genreId));
+        return genreIds.some((genreId) => selectedSet.has(genreId));
       });
     }
 
     // Sort results
     switch (this.activeSortOption()) {
       case 'popularity':
-        results.sort((a, b) => (b.item.vote_average || 0) - (a.item.vote_average || 0));
+        results.sort((a, b) => (b.item.popularity || 0) - (a.item.popularity || 0));
         break;
       case 'rating':
         results.sort((a, b) => (b.item.vote_average || 0) - (a.item.vote_average || 0));
@@ -350,8 +347,7 @@ export class SearchComponent implements OnInit {
         this.currentPage.set(nextPage);
         this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Load more error:', err);
+      error: () => {
         this.isLoading.set(false);
       },
     });
@@ -409,6 +405,10 @@ export class SearchComponent implements OnInit {
   }
 
   goBack(): void {
-    window.history.back();
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 }

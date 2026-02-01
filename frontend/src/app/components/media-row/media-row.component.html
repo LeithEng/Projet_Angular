@@ -1,0 +1,5 @@
+<div class="media-grid">
+    @for (item of items(); track item.id) {
+    <app-content-card [item]="item" ></app-content-card>
+    }
+</div>

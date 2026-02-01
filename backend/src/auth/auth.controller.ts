@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Get,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -17,6 +18,12 @@ import { JwtPayload } from './interfaces/auth.interface';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('usernames-available/:username')
+  @HttpCode(HttpStatus.OK)
+  async verifyUserName(@Param('username') username: string) {
+    return await this.authService.verifyUserName(username);
+  }
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)

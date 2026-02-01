@@ -30,7 +30,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tv-show/tv-show.component').then((m) => m.TvShowComponent),
     canActivate: [authGuard],
   },
-
+  {
+    path: 'genre/:type/:id',
+    loadComponent: () => import('./pages/genre-content/genre-content.component').then(m => m.GenreContentComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'movie/:id',
     loadComponent: () =>
@@ -46,6 +50,12 @@ export const routes: Routes = [
   {
     path: 'search',
     loadComponent: () => import('./pages/search/search.component').then((m) => m.SearchComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
     canActivate: [authGuard],
   },
   {

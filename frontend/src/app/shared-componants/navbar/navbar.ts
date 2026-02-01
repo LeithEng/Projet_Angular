@@ -1,7 +1,10 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,12 +12,27 @@ import { SearchBarComponent } from '../../components/search-bar/search-bar.compo
   imports: [CommonModule, RouterLink, RouterLinkActive, SearchBarComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavbarComponent {
-  isScrolled = false;
+  private authService = inject(AuthService);
 
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    this.isScrolled = window.scrollY > 50;
+  isScrolled = signal(false);
+  isMenuOpen = signal(false);
+
+  constructor() {
+    fromEvent(window, 'scroll')
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.isScrolled.set(window.scrollY > 50);
+      });
+  }
+
+  toggleMenu() {
+    this.isMenuOpen.update((value) => !value);
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 }

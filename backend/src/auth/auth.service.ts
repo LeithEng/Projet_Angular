@@ -41,6 +41,11 @@ export class AuthService {
     return result;
   }
 
+  async verifyUserName(username: string): Promise<{ available: boolean }> {
+    const user = await this.usersService.findByUsername(username);
+    return { available: !user };
+  }
+
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 

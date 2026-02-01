@@ -19,7 +19,7 @@ class ReviewAuthorDetailsDto {
 
   @IsOptional()
   @IsString()
-  avatar_path?: string | null;
+  profile_image?: string | null;
 
   @IsOptional()
   @IsNumber()

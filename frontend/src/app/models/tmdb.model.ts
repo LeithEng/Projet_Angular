@@ -131,7 +131,7 @@ export interface Review {
   author_details: {
     name: string;
     username: string;
-    avatar_path: string | null;
+    profile_image: string | null;
     rating: number | null;
   };
   content: string;
