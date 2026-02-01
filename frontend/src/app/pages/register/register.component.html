@@ -26,6 +26,9 @@
             @if (email?.errors?.['email']) {
               <span>Please enter a valid email address</span>
             }
+            @if (email?.errors?.['emailTaken']) {
+              <span>Email is already registered</span>
+            }
           </div>
         }
       </div>

@@ -46,6 +46,11 @@ export class AuthService {
     return { available: !user };
   }
 
+  async verifyEmail(email: string): Promise<{ available: boolean }> {
+    const user = await this.usersService.findByEmail(email);
+    return { available: !user };
+  }
+
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 

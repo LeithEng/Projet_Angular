@@ -107,8 +107,11 @@ export class AuthService {
   verifyUserName(username: string): Observable<{ available: boolean }> {
     return this.http.get<{ available: boolean }>(`${this.API_URL}/usernames-available/${username}`);
   }
-  
-  
+
+  verifyEmail(email: string): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(`${this.API_URL}/emails-available/${email}`);
+  }
+
   toggleFavorite(
     contentId: number,
     contentType: 'movie' | 'tv',

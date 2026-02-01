@@ -25,6 +25,12 @@ export class AuthController {
     return await this.authService.verifyUserName(username);
   }
 
+  @Get('emails-available/:email')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Param('email') email: string) {
+    return await this.authService.verifyEmail(email);
+  }
+
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto) {
