@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/app_theme.dart';
+import '../../widgets/search_bar_widget.dart';
+import '../search/search_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -51,53 +53,71 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.movie_outlined,
-                size: 100,
-                color: AppTheme.primaryColor,
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Welcome to SahbiFlix!',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+      body: Column(
+        children: [
+          // Search Bar
+          SearchBarWidget(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'This is a placeholder home page.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/profile');
-                },
-                icon: const Icon(Icons.person),
-                label: const Text('Go to Profile'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
-              ),
-            ],
+              );
+            },
           ),
-        ),
+
+          // Main Content
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.movie_outlined,
+                      size: 100,
+                      color: AppTheme.primaryColor,
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Welcome to SahbiFlix!',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'This is a placeholder home page.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppTheme.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/profile');
+                      },
+                      icon: const Icon(Icons.person),
+                      label: const Text('Go to Profile'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

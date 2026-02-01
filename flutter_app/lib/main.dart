@@ -7,9 +7,17 @@ import 'pages/auth/login_page.dart';
 import 'pages/auth/register_page.dart';
 import 'pages/profile/profile_page.dart';
 import 'pages/home/home_page.dart';
+import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  windowManager.setSize(Size(375, 812)); // iPhone dimensions
+  windowManager.center();
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
