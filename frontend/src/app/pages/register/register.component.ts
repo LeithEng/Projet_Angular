@@ -1,15 +1,8 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  NG_ASYNC_VALIDATORS,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { StateService } from '../../services/state.service';
 import { userNameValidator } from '../../validators/user-name.validator';
 import { emailValidator } from '../../validators/email.validator';
 
@@ -30,7 +23,6 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private stateService: StateService,
     private router: Router,
   ) {
     this.registerForm = this.fb.group({
